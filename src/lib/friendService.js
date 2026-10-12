@@ -3,12 +3,9 @@ import { supabase } from './supabaseClient'
 /// 닉네임으로 사용자 검색 (친구 찾기)
 export async function searchUserByEmail(nickname) {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('id, email, full_name, nickname')
-    .eq('nickname', nickname)
-    .maybeSingle()
+    .rpc('search_profile_by_nickname', { nick: nickname })
   if (error) throw error
-  return data
+  return data?.[0] ?? null
 }
 
 // 친구 신청 보내기 (중복 확인 포함)

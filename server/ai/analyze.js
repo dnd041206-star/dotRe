@@ -58,7 +58,8 @@ const TOOL = {
           "규칙: 단어 4개 이내. 물체의 종류만 적고 색·재질·상태·감정·판타지 표현을 넣지 말 것. " +
           "name에 쓴 표현을 절대 재사용하지 말 것. " +
           "좋은 예: the plush doll, the slice of cake, the sneaker, the ceramic mug, the game console. " +
-          "나쁜 예: the white plush spirit doll with blue eyes, the legendary red sneakers."
+          "나쁜 예: the white plush spirit doll with blue eyes, the legendary red sneakers." +
+          "물건에 인쇄된 캐릭터·로고·라벨이 아니라 물건 자체를 가리킬 것. 예: 키티가 그려진 소금통 → the salt bottle (the hello kitty 아님)."
       },
       distractors: {
         type: "array",
@@ -66,7 +67,8 @@ const TOOL = {
         description:
           "주요 피사체와 물리적으로 분리된 다른 물건들의 영어 명사. 예: plate, fork, hand, table. " +
           "피사체에 입혀지거나 붙어 있는 것(옷, 신발, 리본, 모자, 가방, 장식, 부품)은 절대 넣지 말 것. " +
-          "그것들은 피사체의 일부다. 제거할 물건이 없으면 빈 배열."
+          "그것들은 피사체의 일부다. 제거할 물건이 없으면 빈 배열." +
+          "그릇·도시락·접시 안에 담겨 있어 하나의 구성으로 보이는 내용물은 절대 넣지 말 것 — 그것은 피사체의 일부다."
       },
 
      

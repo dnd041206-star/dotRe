@@ -580,4 +580,69 @@ app.post("/api/avatar/equip", requireAuth, async (req, res) => {
   }
 });
 
+
+/** 교환 수령 — 복사본 생성을 서버에서 처리 (클라이언트 items INSERT 차단용) */
+app.post("/api/trades/:tradeId/receive", requireAuth, async (req, res) => {
+  const { tradeId } = req.params;
+
+  try {
+    const { data: trade, error: tErr } = await supabaseAdmin
+      .from("item_trades")
+      .select("id, item_id, to_user, status")
+      .eq("id", tradeId)
+      .maybeSingle();
+    if (tErr) throw tErr;
+    if (!trade) return res.json({ ok: false, reason: "not_found" });
+    if (trade.to_user !== req.user.id) {
+      return res.status(403).json({ error: "권한이 없습니다" });
+    }
+    if (trade.status !== "pending") return res.json({ ok: false, reason: "not_pending" });
+
+    const { data: original, error: oErr } = await supabaseAdmin
+      .from("items").select("*").eq("id", trade.item_id).maybeSingle();
+    if (oErr) throw oErr;
+    if (!original) return res.json({ ok: false, reason: "original_missing" });
+
+    // 원자적 선점 — 중복 수령 방지
+    const { data: claimed, error: cErr } = await supabaseAdmin
+      .from("item_trades")
+      .update({ status: "received", received_at: new Date().toISOString() })
+      .eq("id", tradeId)
+      .eq("status", "pending")
+      .select("id");
+    if (cErr) throw cErr;
+    if (!claimed?.length) return res.json({ ok: false, reason: "not_pending" });
+
+    const { data: copied, error: copyErr } = await supabaseAdmin
+      .from("items")
+      .insert({
+        owner_id:    trade.to_user,
+        creator_id:  original.creator_id,
+        diary_id:    original.diary_id,
+        name:        original.name,
+        description: original.description,
+        image_url:   original.image_url,
+        category:    original.category,
+        rarity:      original.rarity,
+        stats:       original.stats,
+        power:       original.power,
+        diary_score: original.diary_score,
+        meta_status: "done",
+      })
+      .select("id");
+
+    if (copyErr || !copied?.length) {
+      await supabaseAdmin.from("item_trades")
+        .update({ status: "pending", received_at: null }).eq("id", tradeId);
+      console.error("[trades/receive] 복사 실패", tradeId, copyErr);
+      return res.json({ ok: false, reason: "copy_blocked" });
+    }
+
+    res.json({ ok: true, itemId: copied[0].id });
+  } catch (err) {
+    console.error("[trades/receive]", err);
+    res.status(500).json({ error: "수령에 실패했습니다" });
+  }
+});
+
 app.listen(PORT, () => console.log(`서버 실행 중 → http://localhost:${PORT}`));

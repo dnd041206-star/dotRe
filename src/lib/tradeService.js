@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient'
+import { receiveTradeApi } from './api'
 
 /** 교환에 내놓을 수 있는 아이템 — 완료된 내 창작물 전부 (주간 제한 없음) */
 export async function getTradableItems(myId) {
@@ -76,78 +77,9 @@ export async function getPendingTrades(myId) {
   }))
 }
 
-/** 도착한 아이템 수령 — 이 순간부터 정식 소유 아이템(캘린더·방꾸미기 등에 노출) */
+/** 도착한 아이템 수령 — 복사본 생성은 서버에서 처리한다 */
 export async function receiveTrade(tradeId) {
-  // 1. 거래 정보 조회
-  const { data: trade, error: tErr } = await supabase
-    .from('item_trades')
-    .select('id, item_id, to_user, status')
-    .eq('id', tradeId)
-    .maybeSingle()
-  console.log('[receive] 1단계 거래 조회:', { trade, tErr })
-  if (tErr) throw tErr
-  if (!trade) return { ok: false, reason: 'not_found' }
-  if (trade.status !== 'pending') return { ok: false, reason: 'not_pending' }
-
-  // 2. 원본 아이템 조회 — status가 아직 'pending'이라 RLS 정책을 통과한다 (순서 중요!)
-  const { data: original, error: oErr } = await supabase
-    .from('items')
-    .select('*')
-    .eq('id', trade.item_id)
-    .maybeSingle()
-  console.log('[receive] 2단계 원본 조회:', { original, oErr })
-  if (oErr) throw oErr
-  if (!original) return { ok: false, reason: 'original_missing' }
-
-  // 3. 이제서야 원자적으로 선점 (중복 수령 방지는 그대로 유지)
-  const { data: claimed, error: claimError } = await supabase
-    .from('item_trades')
-    .update({ status: 'received', received_at: new Date().toISOString() })
-    .eq('id', tradeId)
-    .eq('status', 'pending')
-    .select('id')
-  console.log('[receive] 3단계 선점:', { claimed, claimError })
-  if (claimError) throw claimError
-  if (!claimed || claimed.length === 0) return { ok: false, reason: 'not_pending' }
-
-  // 실패 시 되돌리기
-  const rollback = async () => {
-    await supabase
-      .from('item_trades')
-      .update({ status: 'pending', received_at: null })
-      .eq('id', tradeId)
-  }
-
-  // 4. 내 소유로 복사본 생성
-  const { data: copied, error: copyError } = await supabase
-    .from('items')
-    .insert({
-      owner_id:    trade.to_user,
-      creator_id:  original.creator_id,
-      diary_id:    original.diary_id,
-      name:        original.name,
-      description: original.description,
-      image_url:   original.image_url,
-      category:    original.category,
-      rarity:      original.rarity,
-      stats:       original.stats,
-      power:       original.power,
-      diary_score: original.diary_score,
-      meta_status: 'done',
-    })
-    .select('id')
-  console.log('[receive] 4단계 복사본 insert:', { copied, copyError })
-
-  if (copyError) {
-    await rollback()
-    throw copyError
-  }
-  if (!copied || copied.length === 0) {
-    await rollback()
-    return { ok: false, reason: 'copy_blocked' }
-  }
-
-  return { ok: true }
+  return receiveTradeApi(tradeId)
 }
 
 /** 도착한 아이템 폐기 — 소유로 인정하지 않고 대기 목록에서 제거 (수령기록에도 안 남음) */

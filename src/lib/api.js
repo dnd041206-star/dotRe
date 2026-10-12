@@ -86,3 +86,7 @@ export function equipAvatarPart(category, partId) {
     body: JSON.stringify({ category, partId }),
   })
 }
+
+export function receiveTradeApi(tradeId) {
+  return request(`/api/trades/${tradeId}/receive`, { method: 'POST' })
+}

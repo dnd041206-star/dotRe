@@ -15,19 +15,25 @@ const SCRIPT = process.env.POSTPROCESS_PY;
 
 /** 분석 결과로 Kontext 프롬프트를 조립 */
 export function buildPrompt({ subject_phrase: s, distractors = [], has_face }) {
-  const extra = distractors.length ? `, ${distractors.join(", ")}` : "";
+  const removal = distractors.length
+    ? `Remove only these separate things around it: ${distractors.join(", ")}.`
+    : "";
 
   return [
-    `Convert ${s} into a single pixel art game item sprite.`,
-    `Show only ${s} by itself — remove every other object,`,
-    `including plates, cutlery, hands, tables and duplicate items${extra}.`,
-    `Keep all clothing, accessories and attached parts of ${s} exactly as they are.`,
-    "Chunky visible pixels, dark outline, flat limited color palette.",
+    `Redraw ${s} as a low-resolution pixel art game item sprite.`,
+    "Large chunky square pixels on a coarse grid about 64 pixels wide,",
+    "flat limited color palette, hard aliased edges, thick dark outline,",
+    "no gradients, no soft shading, no photographic texture, no fine detail.",
+    `Treat ${s} as one whole object — keep everything inside it or attached to it,`,
+    "including all contents, toppings, fillings, clothing, accessories and parts.",
+    "Never pick out one piece and discard the rest.",
+    "Keep the physical object itself; never replace it with a character, logo or label printed on its surface.",
+    removal,
     "Isolated cutout sticker with nothing beneath it, no shadow.",
-    "Neutral white balance, pure white background.",
+    "Flat solid magenta background, RGB 255 0 255, completely uniform.",
     "Fit the whole object inside the frame with a small margin on every side.",
     has_face ? "Keep the face expression clear and readable." : "",
-    `Keep ${s} exactly the same object with the same shape, proportions and viewing angle.`,
+    `Keep ${s} the same object with the same shape, proportions and viewing angle.`,
   ].filter(Boolean).join(" ");
 }
 

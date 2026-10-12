@@ -16,14 +16,19 @@ export async function generateItem({ itemId, userId, photoUrl,
                                      textLength = 0, streakDays = 0 }) {
   try {
     // 1. 원본 사진 로드 + 정규화
-    const res = await fetch(photoUrl);
-    if (!res.ok) throw new Error("PHOTO_FETCH_FAILED");
+     // 1. 원본 사진 로드 + 정규화
+    const photoPath = decodeURIComponent(photoUrl.split("/diary-photos/")[1] || "");
+    if (!photoPath) throw new Error("PHOTO_PATH_PARSE_FAILED");
 
-    const raw = Buffer.from(await res.arrayBuffer());
+    const { data: blob, error: dlErr } = await supabaseAdmin
+      .storage.from("diary-photos").download(photoPath);
+    if (dlErr) throw new Error("PHOTO_FETCH_FAILED");
+
+    const raw = Buffer.from(await blob.arrayBuffer());
     const photo = await sharp(raw)
       .rotate()                    // EXIF 회전 정보만 반영
-      .resize({ width: 1536, height: 1536, fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: 92 })
+      .resize({ width: 768, height: 1536, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 90 })
       .toBuffer();
     const mime = "image/jpeg";
 
