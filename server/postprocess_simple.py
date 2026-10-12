@@ -5,8 +5,8 @@ from scipy import ndimage
 
 # ── 조절 상수 ────────────────────────────────────────────────
 
-BG_D          = 60    # 배경 판정: (R+B)/2 - G 가 이 값 이상이면 마젠타
-BG_MIN        = 120   # 배경 판정: (R+B)/2 가 이 값 이상 (어두운 보라 제외)
+BG_D          = 60    # 배경 씨앗: 확실한 마젠타
+BG_MIN        = 120
 
 BG_WEAK_D     = 30    # 씨앗에서 번져나갈 때의 느슨한 기준
 BG_WEAK_MIN   = 70
@@ -21,12 +21,16 @@ MIN_PIECE     = 0.02  # 이 비율보다 작은 조각은 제거
 PAD           = 12    # 사방 여백 (px)
 OUT_SIZE      = None  # 정수로 두면 그 크기로 축소. None이면 원본 유지
 
+FORCE_GRID    = None  # 숫자(예: 72)를 넣으면 '사진 같을 때만' 그 격자로 강제
+PHOTO_COLORS  = 6000  # 고유색이 이보다 많으면 사진 같다고 판정
+
 
 def magenta(f):
     """마젠타 강도 d = min(R,B) - G. R과 B가 둘 다 높아야 마젠타로 본다"""
     r, g, b = f[:, :, 0], f[:, :, 1], f[:, :, 2]
     rb = np.minimum(r, b)
     return rb - g, rb
+
 
 def background_mask(f):
     """확실한 마젠타를 씨앗으로 잡고, 약한 마젠타(그림자)로 번져나가며 배경을 확장"""
@@ -55,7 +59,7 @@ def background_mask(f):
 
 
 def defringe(alpha, f):
-    """가장자리에 남은 보라빛 잔재를 한 겹씩 제거 — 물체 색에서 멈춤"""
+    """가장자리에 남은 보라빛 잔재를 한 겹씩 제거 — 물체 색에서 멈춘다"""
     d, rb = magenta(f)
     tinted = (d >= FRINGE_D) & (rb >= FRINGE_MIN)
 
@@ -98,6 +102,19 @@ def trim_and_center(img):
     return canvas
 
 
+def color_count(rgb, alpha):
+    vis = rgb[alpha > 0]
+    if vis.size == 0:
+        return 0
+    q = (vis // 8).astype(np.uint8)
+    return int(len(np.unique(q.reshape(-1, 3), axis=0)))
+
+
+def force_grid(img, n):
+    w, h = img.size
+    return img.resize((n, n), Image.BOX).resize((w, h), Image.NEAREST)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("usage: postprocess_simple.py <input> <output>", file=sys.stderr)
@@ -131,6 +148,12 @@ if __name__ == "__main__":
             img = img.resize((OUT_SIZE, OUT_SIZE), Image.BOX)
 
         opaque = float((np.array(img)[:, :, 3] > 0).mean())
+        colors = color_count(rgb, alpha)
+
+        forced = False
+        if FORCE_GRID and colors > PHOTO_COLORS:
+            img = force_grid(img, FORCE_GRID)
+            forced = True
 
         if not keyed:
             print("NO_MAGENTA_BG", file=sys.stderr)   # 생성이 흰 배경으로 나온 경우
@@ -139,7 +162,8 @@ if __name__ == "__main__":
             sys.exit(3)
 
         img.save(dst_path)
-        print(json.dumps({"size": img.width, "fill": round(opaque, 3), "keyed": keyed}))
+        print(json.dumps({"size": img.width, "fill": round(opaque, 3),
+                          "keyed": keyed, "colors": colors, "forced": forced}))
     except Exception as e:
         print(f"{type(e).__name__}: {e}", file=sys.stderr)
         sys.exit(1)
