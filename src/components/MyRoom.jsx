@@ -33,21 +33,6 @@ export default function MyRoom({ className = '', background }) {
         draggable={false}
       />
 
-      {/* 임시 배치 아바타 — 파츠 합성 전까지 고정 위치 (s3-3에서 교체 예정) */}
-      <img
-        src="/assets/char/Avatar.png"
-        alt="내 아바타"
-        className="pixel absolute"
-        style={{
-          left: '50%',
-          top: '55%',
-          width: `${AVATAR_SIZE * 100}%`,
-          zIndex: 1,
-          transform: 'translate(-50%, -50%)',
-        }}
-        draggable={false}
-      />
-
       {all.map((r) => (
         <img key={r.key} src={r.image} alt={r.name}
              className="pixel absolute"
