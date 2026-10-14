@@ -15,6 +15,7 @@ import SettingsPage from './pages/SettingsPage'
 import ShopPage from './pages/ShopPage'
 import RoomEditPage from './pages/RoomEditPage'
 import CustomizePage from './pages/CustomizePage'
+import BgmPlayer from './components/BgmPlayer'
 
 /** 앱 셸 — 세로 플렉스. 본문만 스크롤되고 탭바는 항상 바닥에.
  *  withWindow=false → 레트로윈도우 없이 본문만
@@ -110,6 +111,7 @@ function FullLayout() {
 export default function App() {
   return (
     <BrowserRouter>
+     <BgmPlayer />
       <Routes>
         {/* 비로그인 */}
         <Route element={<Shell withTabBar={false} />}>
