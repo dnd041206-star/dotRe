@@ -13,6 +13,26 @@ import {
 import { getProfileFull } from '../lib/profileService'
 import ProfileCard from '../components/ProfileCard'
 
+/** 'YYYY-MM-DD' → '11월 27일' */
+const fmtBirthday = (b) => {
+  if (!b) return '미설정'
+  const [, m, d] = String(b).slice(0, 10).split('-')
+  return `${Number(m)}월 ${Number(d)}일`
+}
+
+/** 정보 캡슐 한 줄 — 프로필 페이지와 같은 에셋 */
+function InfoBar({ label, value }) {
+  return (
+    <div className="relative w-full">
+      <img src="/assets/ui/ProfileBar.png" alt="" className="block w-full select-none" draggable={false} />
+      <div className="absolute inset-x-[5%] inset-y-0 flex items-center justify-between">
+        <span className="font-galmuri11 text-[14px] text-ink">{label}</span>
+        <span className="truncate pl-2 font-galmuri11 text-[12px] text-ink-dim">{value}</span>
+      </div>
+    </div>
+  )
+}
+
 export default function FriendsPage() {
   const { session } = useAuth()
   const myId = session?.user.id
@@ -303,18 +323,55 @@ export default function FriendsPage() {
              onClick={() => setViewing(null)}>
           <div className="max-h-[80dvh] w-full max-w-[360px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1">
-              <span className="flex-1 truncate font-galmuri9 text-[11px] font-bold text-accent-ink">
+            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1.5">
+              <span className="flex-1 truncate font-galmuri9 text-[12px] font-bold text-accent-ink">
                 {viewing.profile.nickname ?? viewing.profile.full_name}
               </span>
-              <button onClick={() => setViewing(null)} aria-label="닫기"
-                      className="btn-icon flex h-5 w-5 items-center justify-center rounded-sm border border-accent-ink bg-surface font-galmuri9 text-[9px] leading-none text-accent-ink">
-                ✕
+              <button onClick={() => setViewing(null)} aria-label="닫기" className="btn-icon w-[18px] flex-none">
+                <img src="/assets/ui/XButton.png" alt="" className="block w-full" draggable={false} />
               </button>
             </div>
 
-            <div className="max-h-[60dvh] overflow-y-auto p-3">
-              <ProfileCard {...viewing} />
+            <div className="no-scrollbar max-h-[62dvh] overflow-y-auto p-[5%]">
+              {/* 한 줄 소개 */}
+              <p className="text-center font-galmuri11 text-[13px] text-ink-dim">
+                “{viewing.profile.bio || '한 줄 소개가 없어요'}”
+              </p>
+
+              {/* 정보 캡슐 */}
+              <div className="mt-[6%] flex flex-col gap-2">
+                <InfoBar label="닉네임"
+                         value={viewing.profile.nickname ?? viewing.profile.full_name ?? '-'} />
+                <InfoBar label="생일" value={fmtBirthday(viewing.profile.birthday)} />
+                <InfoBar label="일기 작성 횟수" value={`${viewing.diaryCount ?? 0}회`} />
+              </div>
+
+              {/* 대표 아이템 */}
+              <div className="relative mt-[8%] w-[40%]">
+                <img src="/assets/ui/Profile_ItemBar.png" alt=""
+                     className="block w-full select-none" draggable={false} />
+                <span className="absolute inset-x-0 bottom-[12%] top-0 flex items-center justify-center font-galmuri9 text-[14px] text-ink">
+                  대표 아이템
+                </span>
+              </div>
+
+              <div className="mt-[4%] flex gap-[8%]">
+                {[0, 1, 2].map((i) => {
+                  const it = viewing.repItems?.[i] ?? null
+                  return (
+                    <div key={i} className="relative w-[28%]">
+                      <img src="/assets/ui/ProfileItem.png" alt=""
+                           className="block w-full select-none" draggable={false} />
+                      {it && (
+                        <img src={it.image_url} alt={it.name}
+                             className="pixel absolute inset-[14%] h-[72%] w-[72%] object-contain"
+                             draggable={false} />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
               <button
                 onClick={async () => {
                   if (!confirm('친구를 삭제할까요?')) return
@@ -322,7 +379,7 @@ export default function FriendsPage() {
                   setViewing(null)
                   await refresh()
                 }}
-                className="mt-3 w-full rounded-full border-2 border-accent-2 bg-white py-2 font-galmuri9 text-[10px] font-bold text-accent-2">
+                className="mt-[8%] w-full rounded-full border-2 border-accent-2 bg-white py-2 font-galmuri9 text-[12px] font-bold text-accent-2">
                 친구 삭제
               </button>
             </div>

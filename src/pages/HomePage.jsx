@@ -11,7 +11,8 @@ export default function HomePage() {
   const navigate = useNavigate()
   const { session } = useAuth()
   const [hasWrittenToday, setHasWrittenToday] = useState(false)
-const [nickname, setNickname] = useState(null)
+  const [nickname, setNickname] = useState(null)
+  const [showTutorial, setShowTutorial] = useState(false)
 
   useEffect(() => {
     const id = session?.user?.id
@@ -32,61 +33,88 @@ const [nickname, setNickname] = useState(null)
       {/* 1. 프로필 카드 + 오늘 기록 카드 */}
       <div className="flex gap-[2%]">
         {/* 프로필 카드 — 클릭 시 프로필 설정으로 이동 */}
-          <button
-            onClick={() => navigate('/profile')}
-            className="flex w-[61%] items-center gap-[4%] rounded-xl bg-surface-2 p-[3.5%] text-left"
-          >
-            <div className="w-[35%] flex-none overflow-hidden rounded-lg bg-white p-[4%]">
-              <img src="/assets/char/Portrait.png" alt="" className="block w-full" draggable={false} />
-            </div>
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              {/* ▼ 닉네임 필드명은 실제 스키마에 맞게 바꿔줘 */}
-              <span className="truncate font-galmuri11 text-[13px] text-ink">
-                {nickname ?? '이름'}
-              </span>
-              <NutsBadge widthClass="w-[70%]" textClass="text-[15px]" />
-              <span className="text-right font-galmuri11 text-[9px] text-ink-dim">프로필 설정</span>
-            </div>
-          </button>
+        <button
+          onClick={() => navigate('/profile')}
+          className="flex w-[61%] items-center gap-[4%] rounded-xl bg-surface-2 p-[3.5%] text-left"
+        >
+          <div className="w-[35%] flex-none overflow-hidden rounded-lg bg-white p-[4%]">
+            <img src="/assets/char/Portrait.png" alt="" className="block w-full" draggable={false} />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="truncate font-galmuri11 text-[13px] text-ink">
+              {nickname ?? '이름'}
+            </span>
+            <NutsBadge widthClass="w-[70%]" textClass="text-[15px]" />
+            <span className="text-right font-galmuri11 text-[9px] text-ink-dim">프로필 설정</span>
+          </div>
+        </button>
 
-    {/* 오늘 기록 카드 */}
-    <div className="flex flex-1 flex-col justify-center rounded-xl bg-surface-2 p-[3.5%]">
-      <HomeHeader onStatusLoaded={handleStatusLoaded} />
-    </div>
-  </div>
+        {/* 오늘 기록 카드 */}
+        <div className="flex flex-1 flex-col justify-center rounded-xl bg-surface-2 p-[3.5%]">
+          <HomeHeader onStatusLoaded={handleStatusLoaded} />
+        </div>
+      </div>
+
       {/* 3. 방 (MyRoom) */}
       <div className="relative w-full">
         <MyRoom className="rounded-2xl border border-white/10" />
-        <button onClick={() => navigate('/room')} aria-label="방 꾸미기"
-                className="absolute right-2 top-2 z-50 rounded-full bg-black/60 p-2 shadow backdrop-blur-md">
-          ✏️
-        </button>
       </div>
 
-      {/* 4. 하단 버튼 */}
-      <div className="flex w-full items-center justify-between gap-3 mt-0">
-        <button onClick={() => navigate('/shop')} aria-label="상점">
-          <img
-            src="/assets/ui/Shop.png"
-            alt="상점"
-            className="shop-btn select-none"
-            draggable={false}
-          />
+      {/* 4. 하단 버튼 — 상점 / 방꾸미기 / 튜토리얼 + 일기작성 */}
+      <div className="mt-0 flex w-full items-end gap-[1%]">
+        <button onClick={() => navigate('/shop')} aria-label="상점"
+                className="btn-icon w-[17%] flex-none">
+          <img src="/assets/ui/ShopIcon.png" alt="상점"
+               className="block w-full select-none" draggable={false} />
+        </button>
+
+        <button onClick={() => navigate('/room')} aria-label="방꾸미기"
+                className="btn-icon w-[17%] flex-none">
+          <img src="/assets/ui/HomeEditIcon.png" alt="방꾸미기"
+               className="block w-full select-none" draggable={false} />
+        </button>
+
+        <button onClick={() => setShowTutorial(true)} aria-label="튜토리얼"
+                className="btn-icon w-[17%] flex-none">
+          <img src="/assets/ui/TutorialIcon.png" alt="튜토리얼"
+               className="block w-full select-none" draggable={false} />
         </button>
 
         <button
           onClick={() => navigate('/write')}
           disabled={lockWrite}
           aria-label={lockWrite ? '오늘 일기 작성 완료' : '일기 작성'}
+          className="btn-icon ml-auto w-[42%] flex-none translate-y-[6px] "
         >
           <img
             src={lockWrite ? '/assets/ui/WriteButton_dis.png' : '/assets/ui/WriteButton.png'}
             alt={lockWrite ? '오늘 일기 작성 완료' : '일기 작성'}
-            className="ml-auto write-btn select-none"
+            className="block w-full select-none"
             draggable={false}
           />
         </button>
       </div>
+
+      {/* 튜토리얼 창 — 내용은 나중에 채우면 됨 */}
+      {showTutorial && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+             onClick={() => setShowTutorial(false)}>
+          <div className="w-full max-w-[330px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
+               onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1.5">
+              <span className="flex-1 font-galmuri9 text-[12px] font-bold text-accent-ink">튜토리얼</span>
+              <button onClick={() => setShowTutorial(false)} aria-label="닫기" className="btn-icon w-[20px]">
+                <img src="/assets/ui/XButton.png" alt="" className="block w-full" draggable={false} />
+              </button>
+            </div>
+            <div className="p-4">
+              <p className="font-galmuri11 text-[11px] leading-relaxed text-ink">
+                여기에 튜토리얼 내용이 들어갑니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
