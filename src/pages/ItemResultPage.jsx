@@ -143,8 +143,9 @@ export default function ItemResultPage() {
               {STAT_KEYS.map((k) => (
                 <div key={k} className="relative">
                   <img src="/assets/ui/StatBar.png" alt="" className="block w-full  select-none" draggable={false} />
-                  <span className="absolute inset-0 flex items-center justify-center gap-0 font-galmuri9 text-[14px] text-ink">
-                    <span>{STAT_LABELS[k].icon}</span>
+                  <span className="absolute inset-0 flex items-center justify-center gap-1 font-galmuri9 text-[14px] text-ink">
+                    <img src={STAT_LABELS[k].icon} alt=""
+                         className="pixel h-4 w-4 flex-none" draggable={false} />
                     <span>{k.toUpperCase()} : {item.stats?.[k] ?? 0}</span>
                   </span>
                 </div>

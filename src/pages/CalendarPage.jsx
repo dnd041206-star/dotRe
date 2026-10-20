@@ -316,8 +316,10 @@ export default function CalendarPage() {
                 <div className="mt-3 rounded-[6px] border-2 border-border bg-surface-2 p-2">
                   {STAT_KEYS.map((k) => (
                     <div key={k} className="mb-2 flex items-center gap-2 last:mb-0">
-                      <span className="w-14 font-galmuri11 text-[11px] text-ink">
-                        {STAT_LABELS[k].icon} {STAT_LABELS[k].ko}
+                      <span className="flex w-16 flex-none items-center gap-1 font-galmuri11 text-[11px] text-ink">
+                        <img src={STAT_LABELS[k].icon} alt=""
+                             className="pixel h-4 w-4 flex-none" draggable={false} />
+                        {STAT_LABELS[k].ko}
                       </span>
                       <div className="h-2 flex-1 rounded-full border border-border bg-white">
                         <div className="h-full rounded-full"

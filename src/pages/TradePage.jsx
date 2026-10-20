@@ -442,8 +442,10 @@ export default function TradePage() {
               <div className="mt-4 rounded-xl bg-gray-50 p-3">
                 {STAT_KEYS.map((k) => (
                   <div key={k} className="mb-2 flex items-center gap-2 last:mb-0">
-                    <span className="w-14 text-xs">
-                      {STAT_LABELS[k].icon} {STAT_LABELS[k].ko}
+                    <span className="flex w-16 flex-none items-center gap-1 text-xs">
+                      <img src={STAT_LABELS[k].icon} alt=""
+                           className="pixel h-4 w-4 flex-none" draggable={false} />
+                      {STAT_LABELS[k].ko}
                     </span>
                     <div className="h-2 flex-1 rounded-full bg-gray-200">
                       <div className="h-2 rounded-full"
