@@ -7,6 +7,9 @@ import { gradeIcon } from '../game/gradeIcons'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
+/** MiniWindowBar.png의 세로 비율 (1610×143) */
+const WINDOWBAR_RATIO = 143 / 1610
+
 /** Date → 'YYYY-MM-DD' (로컬 기준) */
 function toKey(d) {
   const p = (n) => String(n).padStart(2, '0')
@@ -274,46 +277,43 @@ export default function CalendarPage() {
         )}
       </div>
 
-      {/* ── 아이템 상세 모달 ── */}
+       {/* ── 아이템 상세 모달 ── */}
       {detail && (() => {
         const rarity = RARITY_TABLE[detail.rarity] || RARITY_TABLE.normal
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
                onClick={() => setDetail(null)}>
-            <div className="max-h-[80dvh] w-full max-w-[370px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
+            <div className="relative flex max-h-[80dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                  onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-2 border-b-1 border-line bg-accent px-3 py-2">
-                <span className="flex-1 truncate font-galmuri9 text-[11px] font-bold text-accent-ink">
-                  {detail.name}
-                </span>
-                <button onClick={() => setDetail(null)} aria-label="닫기"
-                        className="btn-icon flex h-5 w-5 items-center justify-center rounded-sm border border-accent-ink bg-surface font-galmuri9 text-[9px] leading-none text-accent-ink">
-                  ✕
-                </button>
-              </div>
 
-              <div className="max-h-[60dvh] overflow-y-auto p-3">
+              {/* 타이틀바 높이만큼 자리 확보 */}
+              <div className="flex-none"
+                   style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                   aria-hidden="true" />
+
+              {/* 본문 */}
+              <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[4%]">
                 <div className="flex flex-col items-center">
                   <img src={detail.image_url} alt={detail.name}
                        className="pixel h-28 w-28 rounded-[6px] border-2 border-border"
                        style={{ backgroundColor: rarity.color + '22' }} />
-                   <img src={gradeIcon(detail.rarity)} alt={rarity.label}
-                       className="mt-2 w-[16%] select-none" draggable={false} />
-                  <p className="mt-2 whitespace-pre-line text-center font-galmuri11 text-[11px] text-ink-dim">
+                  <img src={gradeIcon(detail.rarity)} alt={rarity.label}
+                       className="mt-2 w-[18%] select-none" draggable={false} />
+                  <p className="mt-2 whitespace-pre-line text-center font-galmuri11 text-[11px] leading-relaxed text-ink-dim">
                     {detail.description}
                   </p>
                 </div>
 
                 {detail.sender && (
-                  <div className="mt-3 rounded-[6px] border-2 border-border bg-surface-2 p-2 text-center">
+                  <div className="mt-[4%] rounded-[6px] border-2 border-border bg-surface-2 p-2 text-center">
                     <p className="font-galmuri11 text-[9px] text-ink-dim">보낸 사람</p>
-                    <p className="mt-0.5 font-galmuri9 text-[11px] font-bold text-ink">
+                    <p className="mt-0.5 font-galmuri9 text-[12px] font-bold text-ink">
                       {detail.sender.nickname ?? detail.sender.full_name}
                     </p>
                   </div>
                 )}
 
-                <div className="mt-3 rounded-[6px] border-2 border-border bg-surface-2 p-2">
+                <div className="mt-[4%] rounded-[6px] border-2 border-border bg-surface-2 p-2">
                   {STAT_KEYS.map((k) => (
                     <div key={k} className="mb-2 flex items-center gap-2 last:mb-0">
                       <span className="flex w-16 flex-none items-center gap-1 font-galmuri11 text-[11px] text-ink">
@@ -335,6 +335,17 @@ export default function CalendarPage() {
                     아이템 종합치 {detail.power}
                   </p>
                 </div>
+              </div>
+
+              {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+              <div className="pointer-events-none absolute inset-x-0 top-0">
+                <img src="/assets/ui/MiniWindowBar.png" alt=""
+                     className="block w-full select-none" draggable={false} />
+                <span className="absolute inset-y-0 left-[10%] right-[9%] flex items-center truncate font-galmuri9 text-[13px] font-normal text-ink">
+                  {detail.name}
+                </span>
+                <button onClick={() => setDetail(null)} aria-label="닫기"
+                        className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
               </div>
             </div>
           </div>

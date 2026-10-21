@@ -13,6 +13,9 @@ import {
 import { getProfileFull } from '../lib/profileService'
 import ProfileCard from '../components/ProfileCard'
 
+/** MiniWindowBar.png의 세로 비율 (1610×143) */
+const WINDOWBAR_RATIO = 143 / 1610
+
 /** 'YYYY-MM-DD' → '11월 27일' */
 const fmtBirthday = (b) => {
   if (!b) return '미설정'
@@ -319,20 +322,18 @@ export default function FriendsPage() {
 
       {/* ── 친구 상세 모달 ── */}
       {viewing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
              onClick={() => setViewing(null)}>
-          <div className="max-h-[80dvh] w-full max-w-[360px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
+          <div className="relative flex max-h-[80dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1.5">
-              <span className="flex-1 truncate font-galmuri9 text-[12px] font-bold text-accent-ink">
-                {viewing.profile.nickname ?? viewing.profile.full_name}
-              </span>
-              <button onClick={() => setViewing(null)} aria-label="닫기" className="btn-icon w-[18px] flex-none">
-                <img src="/assets/ui/XButton.png" alt="" className="block w-full" draggable={false} />
-              </button>
-            </div>
 
-            <div className="no-scrollbar max-h-[62dvh] overflow-y-auto p-[5%]">
+            {/* 타이틀바 높이만큼 자리 확보 */}
+            <div className="flex-none"
+                 style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                 aria-hidden="true" />
+
+            {/* 본문 */}
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[5%]">
               {/* 한 줄 소개 */}
               <p className="text-center font-galmuri11 text-[13px] text-ink-dim">
                 “{viewing.profile.bio || '한 줄 소개가 없어요'}”
@@ -382,6 +383,17 @@ export default function FriendsPage() {
                 className="mt-[8%] w-full rounded-full border-2 border-accent-2 bg-white py-2 font-galmuri9 text-[12px] font-bold text-accent-2">
                 친구 삭제
               </button>
+            </div>
+
+            {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0">
+              <img src="/assets/ui/MiniWindowBar.png" alt=""
+                   className="block w-full select-none" draggable={false} />
+              <span className="absolute inset-y-0 left-[10%] right-[9%] flex items-center truncate font-galmuri9 text-[13px] font-normal text-ink">
+                {viewing.profile.nickname ?? viewing.profile.full_name}
+              </span>
+              <button onClick={() => setViewing(null)} aria-label="닫기"
+                      className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
             </div>
           </div>
         </div>

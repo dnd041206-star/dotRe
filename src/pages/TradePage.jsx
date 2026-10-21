@@ -8,6 +8,7 @@ import {
 } from '../lib/tradeService'
 import { RARITY_TABLE, STAT_KEYS, STAT_LABELS, statPercent } from '../game/statSystem'
 import { useNavigate } from 'react-router-dom'
+import { gradeIcon } from '../game/gradeIcons'
 
 const FAIL_MESSAGES = {
   not_pending: '이미 처리된 아이템이에요.',
@@ -15,6 +16,8 @@ const FAIL_MESSAGES = {
   original_missing: '원본 아이템을 불러올 수 없어요. (items SELECT 권한 확인 필요)',
   copy_blocked: '아이템을 보관함에 넣지 못했어요. (items INSERT 권한 확인 필요)',
 }
+/** MiniWindowBar.png의 세로 비율 (1610×143) */
+const WINDOWBAR_RATIO = 143 / 1610
 
 export default function TradePage() {
   const { session } = useAuth()
@@ -250,24 +253,21 @@ export default function TradePage() {
 
       {/* ── 아이템 / 친구 선택 창 ── */}
       {picker && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-6"
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-4"
              onClick={() => setPicker(null)}>
-          <div className="max-h-[70dvh] w-full max-w-[330px] overflow-hidden rounded-[10px] border-2 border-border bg-surface"
+          <div className="relative flex h-[66dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between border-b-2 border-border px-4 py-2">
-              <h3 className="font-galmuri9 text-[13px] font-bold text-ink">
-                {picker === 'item' ? '보낼 아이템' : '보낼 친구'}
-              </h3>
-              <button onClick={() => setPicker(null)} aria-label="닫기"
-                      className="btn-icon w-[22px]">
-                <img src="/assets/ui/XButton.png" alt="" className="block w-full" draggable={false} />
-              </button>
-            </div>
 
-            <div className="no-scrollbar max-h-[55dvh] overflow-y-auto p-3">
+            {/* 타이틀바 높이만큼 자리 확보 */}
+            <div className="flex-none"
+                 style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                 aria-hidden="true" />
+
+            {/* 본문 */}
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[4%]">
               {picker === 'item' ? (
                 items.length === 0 ? (
-                  <p className="py-8 text-center font-galmuri11 text-[10px] text-ink-dim">
+                  <p className="py-8 text-center font-galmuri11 text-[11px] text-ink-dim">
                     아직 만든 아이템이 없어요.
                   </p>
                 ) : (
@@ -279,11 +279,11 @@ export default function TradePage() {
                                 onClick={() => { setSelectedItem(it); setPicker(null) }}
                                 className="btn-icon flex flex-col items-center">
                           <img src={it.image_url} alt={it.name}
-                               className={`pixel h-16 w-16 rounded-[6px] border-2 ${
+                               className={`pixel h-16 w-16 rounded-[4px] border-2 ${
                                  selectedItem?.id === it.id ? 'border-accent-2' : 'border-border'
                                }`}
                                style={{ backgroundColor: rarity.color + '22' }} />
-                          <span className="mt-1 line-clamp-1 font-galmuri11 text-[9px] text-ink">{it.name}</span>
+                          <span className="mt-1 line-clamp-1 font-galmuri11 text-[10px] text-ink">{it.name}</span>
                         </button>
                       )
                     })}
@@ -291,7 +291,7 @@ export default function TradePage() {
                 )
               ) : (
                 friends.length === 0 ? (
-                  <p className="py-8 text-center font-galmuri11 text-[10px] text-ink-dim">
+                  <p className="py-8 text-center font-galmuri11 text-[11px] text-ink-dim">
                     친구가 없어요. 먼저 친구를 맺어보세요.
                   </p>
                 ) : (
@@ -300,7 +300,9 @@ export default function TradePage() {
                       <button key={f.id}
                               onClick={() => { setSelectedFriend(f); setPicker(null) }}
                               className={`flex w-full items-center gap-3 rounded-[6px] border-2 p-2 text-left ${
-                                selectedFriend?.id === f.id ? 'border-accent-2 bg-surface-2' : 'border-transparent bg-surface-2'
+                                selectedFriend?.id === f.id
+                                  ? 'border-accent-2 bg-surface-2'
+                                  : 'border-border bg-surface-2'
                               }`}>
                         <img src="/assets/char/Portrait.png" alt=""
                              className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
@@ -314,95 +316,142 @@ export default function TradePage() {
                 )
               )}
             </div>
+
+            {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0">
+              <img src="/assets/ui/MiniWindowBar.png" alt=""
+                   className="block w-full select-none" draggable={false} />
+              <span className="absolute inset-y-0 left-[10%] flex items-center font-galmuri9 text-[13px] font-regular text-ink">
+                {picker === 'item' ? '보낼 아이템' : '보낼 친구'}
+              </span>
+              <button onClick={() => setPicker(null)} aria-label="닫기"
+                      className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
+            </div>
           </div>
         </div>
       )}
 
       {showBox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
              onClick={() => setShowBox(false)}>
-          <div className="max-h-[80vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-white p-4"
+          <div className="relative flex h-[72dvh] w-full max-w-[360px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-bold">보관함</h3>
-              <button onClick={() => setShowBox(false)} className="px-2 text-gray-400">✕</button>
-            </div>
 
-            <div className="mb-3 flex gap-2">
-              {[['pending', `받은 아이템${pending.length ? ` (${pending.length})` : ''}`], ['received', '수령 기록']].map(([key, name]) => (
-                <button key={key} onClick={() => setBoxTab(key)}
-                  className={`rounded-full px-3 py-1 text-sm ${
-                    boxTab === key ? 'bg-lime-400 font-bold' : 'bg-gray-100 text-gray-500'
-                  }`}>
-                  {name}
+            {/* 타이틀바 높이만큼 자리 확보 */}
+            <div className="flex-none"
+                 style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                 aria-hidden="true" />
+
+            {/* 본문 */}
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[4%]">
+              {/* 탭 — 이미지 1장을 상태별로 통째 교체, 좌우 절반이 클릭 영역 */}
+               <div className="relative mx-auto w-[76%]">
+                <img
+                  src={boxTab === 'pending'
+                    ? '/assets/ui/BoxTabList.png'
+                    : '/assets/ui/BoxTabReceived.png'}
+                  alt={boxTab === 'pending' ? '목록' : '수령 기록'}
+                  className="block w-full  select-none"
+                  draggable={false}
+                />
+                <button onClick={() => setBoxTab('pending')} aria-label="목록"
+                        className="btn-icon absolute inset-y-0 left-0 w-1/2">
+                  {pending.length > 0 && (
+                    <span className="absolute right-[8%] top-[10%] flex h-4 min-w-4 items-center justify-center rounded-full border border-line bg-accent-2 px-1 font-galmuri9 text-[8px] text-white">
+                      {pending.length}
+                    </span>
+                  )}
                 </button>
-              ))}
+                <button onClick={() => setBoxTab('received')} aria-label="수령 기록"
+                        className="btn-icon absolute inset-y-0 right-0 w-1/2" />
+              </div>
+
+              <div className="mt-[4%]">
+                {boxLoading ? (
+                  <p className="py-8 text-center font-galmuri11 text-[11px] text-ink-dim">불러오는 중...</p>
+                ) : boxTab === 'pending' ? (
+                  pending.length === 0 ? (
+                    <p className="py-8 text-center font-galmuri11 text-[11px] text-ink-dim">
+                      새로 도착한 아이템이 없어요.
+                    </p>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {pending.map((t) => {
+                        const it = t.item
+                        const rarity = it ? (RARITY_TABLE[it.rarity] || RARITY_TABLE.normal) : RARITY_TABLE.normal
+                        const deciding = decidingId === t.tradeId
+                        return (
+                          <div key={t.tradeId}
+                               className="flex items-center gap-3 rounded-[6px] border-2 border-border bg-surface-2 p-2">
+                            {it ? (
+                              <img src={it.image_url} alt={it.name}
+                                   className="pixel h-14 w-14 flex-none rounded-[4px] border-2 border-border"
+                                   style={{ backgroundColor: rarity.color + '22' }} />
+                            ) : (
+                              <div className="h-14 w-14 flex-none rounded-[4px] border-2 border-border bg-white" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="line-clamp-1 font-galmuri9 text-[12px] font-bold text-ink">
+                                {it?.name ?? '알 수 없는 아이템'}
+                              </p>
+                              <p className="mt-0.5 line-clamp-1 font-galmuri11 text-[10px] text-ink-dim">
+                                {t.sender?.nickname ?? t.sender?.full_name ?? '알 수 없음'} 님이 보냄
+                              </p>
+                            </div>
+                            <div className="flex flex-none flex-col gap-1">
+                              <button onClick={() => handleReceive(t.tradeId)} disabled={deciding}
+                                      className="btn-icon rounded-full border-2 border-line bg-accent-2 px-3 py-1 font-galmuri9 text-[10px] font-regular text-white disabled:opacity-50">
+                                수령
+                              </button>
+                              <button onClick={() => handleDiscard(t.tradeId)} disabled={deciding}
+                                      className="btn-icon rounded-full border-2 border-border bg-white px-3 py-1 font-galmuri9 text-[10px] text-ink-dim disabled:opacity-50">
+                                폐기
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                ) : (
+                  received.length === 0 ? (
+                    <p className="py-8 text-center font-galmuri11 text-[11px] text-ink-dim">
+                      아직 수령한 아이템이 없어요.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {received.map((it) => {
+                        const rarity = RARITY_TABLE[it.rarity] || RARITY_TABLE.normal
+                        return (
+                          <button key={it.id} onClick={() => setDetail(it)}
+                                  className="btn-icon flex flex-col items-center">
+                            <img src={it.image_url} alt={it.name}
+                                 className="pixel h-16 w-16 rounded-[4px] border-2 border-border"
+                                 style={{ backgroundColor: rarity.color + '22' }} />
+                            <span className="mt-1 line-clamp-1 font-galmuri11 text-[10px] text-ink">{it.name}</span>
+                            <span className="line-clamp-1 font-galmuri11 text-[9px] text-ink-dim">
+                              {it.sender?.nickname ?? it.sender?.full_name ?? '?'}
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
 
-            {boxLoading ? (
-              <p className="py-8 text-center text-sm text-gray-400">불러오는 중...</p>
-            ) : boxTab === 'pending' ? (
-              pending.length === 0 ? (
-                <p className="py-8 text-center text-sm text-gray-400">새로 도착한 아이템이 없어요.</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {pending.map((t) => {
-                    const it = t.item
-                    const rarity = it ? (RARITY_TABLE[it.rarity] || RARITY_TABLE.normal) : RARITY_TABLE.normal
-                    const deciding = decidingId === t.tradeId
-                    return (
-                      <div key={t.tradeId} className="flex items-center gap-3 rounded-xl border p-2">
-                        {it ? (
-                          <img src={it.image_url} alt={it.name}
-                               className="pixel h-14 w-14 flex-none rounded-lg"
-                               style={{ backgroundColor: rarity.color + '22' }} />
-                        ) : (
-                          <div className="h-14 w-14 flex-none rounded-lg bg-gray-100" />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="line-clamp-1 text-sm font-bold">{it?.name ?? '알 수 없는 아이템'}</p>
-                          <p className="line-clamp-1 text-xs text-gray-400">
-                            {t.sender?.nickname ?? t.sender?.full_name ?? '알 수 없음'} 님이 보냄
-                          </p>
-                        </div>
-                        <div className="flex flex-none flex-col gap-1">
-                          <button onClick={() => handleReceive(t.tradeId)} disabled={deciding}
-                                  className="rounded bg-lime-400 px-2 py-1 text-xs font-bold disabled:opacity-50">
-                            수령
-                          </button>
-                          <button onClick={() => handleDiscard(t.tradeId)} disabled={deciding}
-                                  className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-500 disabled:opacity-50">
-                            폐기
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            ) : (
-              received.length === 0 ? (
-                <p className="py-8 text-center text-sm text-gray-400">아직 수령한 아이템이 없어요.</p>
-              ) : (
-                <div className="grid grid-cols-3 gap-2">
-                  {received.map((it) => {
-                    const rarity = RARITY_TABLE[it.rarity] || RARITY_TABLE.normal
-                    return (
-                      <button key={it.id} onClick={() => setDetail(it)}
-                              className="flex flex-col items-center">
-                        <img src={it.image_url} alt={it.name}
-                             className="pixel h-16 w-16 rounded-lg"
-                             style={{ backgroundColor: rarity.color + '22' }} />
-                        <span className="mt-1 line-clamp-1 text-[11px]">{it.name}</span>
-                        <span className="line-clamp-1 text-[10px] text-gray-400">
-                          {it.sender?.nickname ?? it.sender?.full_name ?? '?'}
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )
-            )}
+            {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0">
+              <img src="/assets/ui/MiniWindowBar.png" alt=""
+                   className="block w-full select-none" draggable={false} />
+              <span className="absolute inset-y-0 left-[10%] flex items-center font-galmuri9 text-[13px] font-regular text-ink">
+                보관함
+              </span>
+              {/* 에셋에 그려진 X 위에 얹는 투명 클릭 영역 */}
+              <button onClick={() => setShowBox(false)} aria-label="닫기"
+                      className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
+            </div>
           </div>
         </div>
       )}
@@ -410,60 +459,78 @@ export default function TradePage() {
       {detail && (() => {
         const rarity = RARITY_TABLE[detail.rarity] || RARITY_TABLE.normal
         return (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
                onClick={() => setDetail(null)}>
-            <div className="w-full max-w-xs rounded-2xl bg-white p-5"
+            <div className="relative flex max-h-[80dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                  onClick={(e) => e.stopPropagation()}>
-              <div className="flex flex-col items-center">
-                <img src={detail.image_url} alt={detail.name}
-                     className="pixel h-32 w-32 rounded-xl"
-                     style={{ backgroundColor: rarity.color + '22' }} />
-                <span className="mt-2 rounded-full px-3 py-0.5 text-xs font-bold text-white"
-                      style={{ backgroundColor: rarity.color }}>
-                  {rarity.label}
-                </span>
-                <h4 className="mt-2 text-lg font-bold">{detail.name}</h4>
-                <p className="mt-1 text-center text-sm text-gray-500">{detail.description}</p>
-              </div>
 
-              {detail.sender && (
-                <div className="mt-3 rounded-xl bg-lime-50 p-3 text-center">
-                  <p className="text-xs text-gray-400">보낸 사람</p>
-                  <p className="font-bold">{detail.sender.nickname ?? detail.sender.full_name}</p>
-                  {detail.sender.bio && (
-                    <p className="mt-0.5 text-xs text-gray-500">“{detail.sender.bio}”</p>
-                  )}
-                  <p className="mt-1 text-[11px] text-gray-400">
-                    {String(detail.created_at).slice(0, 10)} 도착
+              {/* 타이틀바 높이만큼 자리 확보 */}
+              <div className="flex-none"
+                   style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                   aria-hidden="true" />
+
+              {/* 본문 */}
+              <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[4%]">
+                <div className="flex flex-col items-center">
+                  <img src={detail.image_url} alt={detail.name}
+                       className="pixel h-28 w-28 rounded-[6px] border-2 border-border"
+                       style={{ backgroundColor: rarity.color + '22' }} />
+                  <img src={gradeIcon(detail.rarity)} alt={rarity.label}
+                       className="mt-2 w-[18%] select-none" draggable={false} />
+                  <p className="mt-2 whitespace-pre-line text-center font-galmuri11 text-[11px] leading-relaxed text-ink-dim">
+                    {detail.description}
                   </p>
                 </div>
-              )}
 
-              <div className="mt-4 rounded-xl bg-gray-50 p-3">
-                {STAT_KEYS.map((k) => (
-                  <div key={k} className="mb-2 flex items-center gap-2 last:mb-0">
-                    <span className="flex w-16 flex-none items-center gap-1 text-xs">
-                      <img src={STAT_LABELS[k].icon} alt=""
-                           className="pixel h-4 w-4 flex-none" draggable={false} />
-                      {STAT_LABELS[k].ko}
-                    </span>
-                    <div className="h-2 flex-1 rounded-full bg-gray-200">
-                      <div className="h-2 rounded-full"
-                           style={{ width: `${statPercent(detail.stats?.[k] ?? 0)}%`,
-                                    backgroundColor: STAT_LABELS[k].color }} />
-                    </div>
-                    <span className="w-7 text-right text-xs font-bold">{detail.stats?.[k] ?? 0}</span>
+                {detail.sender && (
+                  <div className="mt-[4%] rounded-[6px] border-2 border-border bg-surface-2 p-2 text-center">
+                    <p className="font-galmuri11 text-[9px] text-ink-dim">보낸 사람</p>
+                    <p className="mt-0.5 font-galmuri9 text-[12px] font-bold text-ink">
+                      {detail.sender.nickname ?? detail.sender.full_name}
+                    </p>
+                    {detail.sender.bio && (
+                      <p className="mt-0.5 font-galmuri11 text-[10px] text-ink-dim">“{detail.sender.bio}”</p>
+                    )}
+                    <p className="mt-1 font-galmuri11 text-[9px] text-ink-dim">
+                      {String(detail.created_at).slice(0, 10)} 도착
+                    </p>
                   </div>
-                ))}
-                <p className="mt-1 text-right text-[11px] text-gray-400">
-                  아이템 종합치 {detail.power}
-                </p>
+                )}
+
+                <div className="mt-[4%] rounded-[6px] border-2 border-border bg-surface-2 p-2">
+                  {STAT_KEYS.map((k) => (
+                    <div key={k} className="mb-2 flex items-center gap-2 last:mb-0">
+                      <span className="flex w-16 flex-none items-center gap-1 font-galmuri11 text-[11px] text-ink">
+                        <img src={STAT_LABELS[k].icon} alt=""
+                             className="pixel h-4 w-4 flex-none" draggable={false} />
+                        {STAT_LABELS[k].ko}
+                      </span>
+                      <div className="h-2 flex-1 rounded-full border border-border bg-white">
+                        <div className="h-full rounded-full"
+                             style={{ width: `${statPercent(detail.stats?.[k] ?? 0)}%`,
+                                      backgroundColor: STAT_LABELS[k].color }} />
+                      </div>
+                      <span className="w-7 text-right font-galmuri9 text-[10px] font-bold text-ink">
+                        {detail.stats?.[k] ?? 0}
+                      </span>
+                    </div>
+                  ))}
+                  <p className="mt-1 text-right font-galmuri11 text-[9px] text-ink-dim">
+                    아이템 종합치 {detail.power}
+                  </p>
+                </div>
               </div>
 
-              <button onClick={() => setDetail(null)}
-                      className="mt-4 w-full rounded-xl bg-gray-200 py-2 font-bold">
-                닫기
-              </button>
+              {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+              <div className="pointer-events-none absolute inset-x-0 top-0">
+                <img src="/assets/ui/MiniWindowBar.png" alt=""
+                     className="block w-full select-none" draggable={false} />
+                <span className="absolute inset-y-0 left-[10%] right-[9%] flex items-center truncate font-galmuri9 text-[13px] font-regular text-ink">
+                  {detail.name}
+                </span>
+                <button onClick={() => setDetail(null)} aria-label="닫기"
+                        className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
+              </div>
             </div>
           </div>
         )
