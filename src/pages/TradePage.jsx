@@ -400,11 +400,11 @@ export default function TradePage() {
                             </div>
                             <div className="flex flex-none flex-col gap-1">
                               <button onClick={() => handleReceive(t.tradeId)} disabled={deciding}
-                                      className="btn-icon rounded-full border-2 border-line bg-accent-2 px-3 py-1 font-galmuri9 text-[10px] font-regular text-white disabled:opacity-50">
+                                      className="btn-icon rounded-full border-1 border-line bg-accent-2 px-3 py-1 font-galmuri9 text-[10px] font-regular text-white disabled:opacity-50">
                                 수령
                               </button>
                               <button onClick={() => handleDiscard(t.tradeId)} disabled={deciding}
-                                      className="btn-icon rounded-full border-2 border-border bg-white px-3 py-1 font-galmuri9 text-[10px] text-ink-dim disabled:opacity-50">
+                                      className="btn-icon rounded-full border-1 border-border bg-white px-3 py-1 font-galmuri9 text-[10px] text-ink-dim disabled:opacity-50">
                                 폐기
                               </button>
                             </div>
