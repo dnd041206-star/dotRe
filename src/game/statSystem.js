@@ -11,12 +11,11 @@
 export const STAT_KEYS = ["luck", "cool", "energy", "cute"];
 
 export const STAT_LABELS = {
-  luck:   { ko: "행운",   icon: "🍀", color: "#22c55e" },
-  cool:   { ko: "멋짐",   icon: "😎", color: "#3b82f6" },
-  energy: { ko: "활력",   icon: "⚡", color: "#f59e0b" },
-  cute:   { ko: "귀여움", icon: "🎀", color: "#ec4899" }
+  luck:   { ko: "행운",   icon: "/assets/icons/StatLuck.png",   color: "#22c55e" },
+  cool:   { ko: "멋짐",   icon: "/assets/icons/StatCool.png",   color: "#3b82f6" },
+  energy: { ko: "활력",   icon: "/assets/icons/StatEnergy.png", color: "#f59e0b" },
+  cute:   { ko: "귀여움", icon: "/assets/icons/StatCute.png",   color: "#ec4899" }
 };
-
 export const CATEGORY_WEIGHTS = {
   food:       { luck: 2, cool: 2, energy: 5, cute: 4 },
   drink:      { luck: 2, cool: 3, energy: 5, cute: 3 },

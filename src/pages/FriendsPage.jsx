@@ -13,6 +13,9 @@ import {
 import { getProfileFull } from '../lib/profileService'
 import ProfileCard from '../components/ProfileCard'
 
+/** MiniWindowBar.png의 세로 비율 (1610×143) */
+const WINDOWBAR_RATIO = 143 / 1610
+
 /** 'YYYY-MM-DD' → '11월 27일' */
 const fmtBirthday = (b) => {
   if (!b) return '미설정'
@@ -120,219 +123,178 @@ export default function FriendsPage() {
     setSearchResult(null)
   }
 
-   return (
+    return (
     <div className="flex h-full flex-col px-[3.5%] py-[3%]">
-      {/* ── 상단 미니탭 (항상 친구 목록) ── */}
+      {/* ── 상단 탭 ── */}
       <div className="relative flex-none">
-        <img
-          src="/assets/ui/FriendCatalog.png"
-          alt="친구 목록"
-          className="block w-full select-none"
-          draggable={false}
-        />
+        {showFinder ? (
+          <>
+            <img
+              src={finderTab === 'search' ? '/assets/ui/FriendFind.png' : '/assets/ui/FriendRequest.png'}
+              alt={finderTab === 'search' ? '친구 찾기' : '친구 요청'}
+              className="block w-full select-none"
+              draggable={false}
+            />
+            <button onClick={() => setFinderTab('search')} aria-label="친구 찾기"
+                    className="btn-icon absolute inset-y-0 left-0 w-1/2" />
+            <button onClick={() => setFinderTab('requests')} aria-label="친구 요청"
+                    className="btn-icon absolute inset-y-0 right-0 w-1/2">
+              {requests.length > 0 && (
+                <span className="absolute right-[6%] top-[10%] flex h-4 min-w-4 items-center justify-center rounded-full border border-line bg-accent-2 px-1 font-galmuri9 text-[8px] text-white">
+                  {requests.length}
+                </span>
+              )}
+            </button>
+          </>
+        ) : (
+          <img src="/assets/ui/FriendCatalog.png" alt="친구 목록"
+               className="block w-full select-none" draggable={false} />
+        )}
       </div>
 
-      {/* ── 친구 목록 (스크롤 영역) ── */}
-      <div className="no-scrollbar mt-[-8%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[10%]">
-        {friends.length === 0 ? (
-          <p className="mt-8 text-center font-galmuri11 text-[10px] text-ink-dim">
-            아직 친구가 없어요.<br />아래 친구 추가에서 닉네임으로 검색해보세요.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {friends.map((f) => (
-              <button
-                key={f.relationId}
-                onClick={async () => {
-                  const d = await getProfileFull(f.id)
-                  setViewing({ relationId: f.relationId, ...d })
-                }}
-                className="flex w-full items-center gap-3 rounded-[6px] bg-surface-2 p-2 text-left"
-              >
-                {/* 친구 프로필 이미지 — 기본 이미지로 표시 중 */}
-                <img
-                  src="/assets/char/Portrait.png"
-                  alt=""
-                  className="h-12 w-12 flex-none rounded-full border-1 border-border bg-white object-cover"
-                  draggable={false}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-galmuri9 text-[12px] font-bold text-ink">{label(f)}</p>
-                  <p className="mt-1 truncate rounded-[4px] bg-white px-2 py-1 font-galmuri11 text-[10px] text-ink-dim">
-                    {f.bio || '한 줄 소개가 없어요'}
-                  </p>
-                </div>
+      {/* ── 내용 박스 ── */}
+      <div className={`no-scrollbar min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] ${
+        showFinder ? 'mt-[-8%] pt-[10%]' : 'mt-[-8%] pt-[10%]'
+      }`}>
+        {!showFinder ? (
+          /* 친구 목록 */
+          friends.length === 0 ? (
+            <p className="mt-8 text-center font-galmuri11 text-[10px] text-ink-dim">
+              아직 친구가 없어요.<br />아래 친구 추가에서 닉네임으로 검색해보세요.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {friends.map((f) => (
+                <button
+                  key={f.relationId}
+                  onClick={async () => {
+                    const d = await getProfileFull(f.id)
+                    setViewing({ relationId: f.relationId, ...d })
+                  }}
+                  className="flex w-full items-center gap-3 rounded-[6px] bg-surface-2 p-2 text-left"
+                >
+                  <img src="/assets/char/Portrait.png" alt=""
+                       className="h-12 w-12 flex-none rounded-full border-1 border-border bg-white object-cover"
+                       draggable={false} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-galmuri9 text-[12px] font-bold text-ink">{label(f)}</p>
+                    <p className="mt-1 truncate rounded-[4px] bg-white px-2 py-1 font-galmuri11 text-[10px] text-ink-dim">
+                      {f.bio || '한 줄 소개가 없어요'}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )
+        ) : finderTab === 'search' ? (
+          /* 친구 찾기 */
+          <div>
+            <div className="flex items-center gap-2 rounded-full border-2 border-border bg-surface-2 px-3 py-1">
+              <input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="친구 닉네임 입력"
+                className="min-w-0 flex-1 bg-transparent font-galmuri11 outline-none placeholder:text-ink-dim"
+              />
+              <button onClick={handleSearch} disabled={busy} aria-label="검색"
+                      className="btn-icon flex-none px-1 disabled:opacity-50">
+                <img src="/assets/icons/Search.png" alt="" className="pixel h-5 w-5" draggable={false} />
               </button>
-            ))}
+            </div>
+
+            {searchResult === 'none' && (
+              <p className="mt-4 text-center font-galmuri11 text-[10px] text-ink-dim">
+                해당 닉네임의 사용자를 찾을 수 없습니다.
+              </p>
+            )}
+
+            {searchResult && searchResult !== 'none' && (
+              <>
+                <div className="mt-3 flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
+                  <img src="/assets/char/Portrait.png" alt=""
+                       className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
+                       draggable={false} />
+                  <span className="truncate font-galmuri9 text-[12px] font-bold text-ink">
+                    {label(searchResult)}
+                  </span>
+                </div>
+
+                <div className="mt-3 flex justify-center">
+                  <button onClick={handleSendRequest} disabled={busy}
+                          className="btn-icon w-[22%] min-w-[80px] disabled:opacity-50">
+                    <img src="/assets/ui/FriendApplication.png" alt="친구 신청"
+                         className="block h-auto w-full select-none" draggable={false} />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
+        ) : (
+          /* 친구 요청 */
+          requests.length === 0 ? (
+            <p className="mt-8 text-center font-galmuri11 text-[10px] text-ink-dim">
+              받은 요청이 없습니다.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {requests.map((req) => (
+                <div key={req.id} className="flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
+                  <img src="/assets/char/Portrait.png" alt=""
+                       className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
+                       draggable={false} />
+                  <span className="min-w-0 flex-1 truncate font-galmuri9 text-[12px] font-bold text-ink">
+                    {label(req.requester)}
+                  </span>
+                  <button onClick={() => handleAccept(req.id)} disabled={busy}
+                          className="flex-none rounded-full border-2 border-line bg-accent px-3 py-1.5 font-galmuri9 text-[11px] font-bold text-accent-ink disabled:opacity-50">
+                    수락
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </div>
 
       {/* ── 하단 버튼 ── */}
       <div className="mt-[3%] flex flex-none items-center justify-between">
-        <button onClick={() => navigate('/')} aria-label="홈으로" className="w-[13%]">
+        <button
+          onClick={() => (showFinder ? closeFinder() : navigate('/'))}
+          aria-label={showFinder ? '친구 목록으로' : '홈으로'}
+          className="btn-icon w-[13%]"
+        >
           <img src="/assets/ui/Back.png" alt="" className="block w-full select-none" draggable={false} />
         </button>
 
-        <button
-          onClick={() => setShowFinder(true)}
-          className="relative w-[20%] min-w-[110px] flex-none"
-        >
-          <img
-            src="/assets/ui/FriendAdd.png"
-            alt="친구 추가"
-            className="block h-auto w-full select-none"
-            draggable={false}
-          />
-          {requests.length > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-line bg-accent-2 px-1 font-galmuri9 text-[8px] text-white">
-              {requests.length}
-            </span>
-          )}
-        </button>
+        {!showFinder && (
+          <button onClick={() => setShowFinder(true)}
+                  className="btn-icon relative w-[20%] min-w-[110px] flex-none">
+            <img src="/assets/ui/FriendAdd.png" alt="친구 추가"
+                 className="block h-auto w-full select-none" draggable={false} />
+            {requests.length > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-line bg-accent-2 px-1 font-galmuri9 text-[8px] text-white">
+                {requests.length}
+              </span>
+            )}
+          </button>
+        )}
       </div>
-
-      {/* ── 친구 추가 오버레이 ── */}
-      {showFinder && (
-        <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-6"
-          onClick={closeFinder}
-        >
-          <div
-            className="flex h-[65dvh] w-full max-w-[330px] flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 탭 2종 — 왼쪽 절반 친구 찾기 / 오른쪽 절반 친구 요청 */}
-            <div className="relative flex-none">
-              <img
-                src={finderTab === 'search' ? '/assets/ui/FriendFind.png' : '/assets/ui/FriendRequest.png'}
-                alt={finderTab === 'search' ? '친구 찾기' : '친구 요청'}
-                className="block w-full select-none"
-                draggable={false}
-              />
-              <button
-                onClick={() => setFinderTab('search')}
-                aria-label="친구 찾기"
-                className="btn-icon absolute inset-y-0 left-0 w-1/2"
-              />
-              <button
-                onClick={() => setFinderTab('requests')}
-                aria-label="친구 요청"
-                className="btn-icon absolute inset-y-0 right-0 w-1/2"
-              >
-                {requests.length > 0 && (
-                  <span className="absolute right-[6%] top-[10%] flex h-4 min-w-4 items-center justify-center rounded-full border border-line bg-accent-2 px-1 font-galmuri9 text-[8px] text-white">
-                    {requests.length}
-                  </span>
-                )}
-              </button>
-            </div>
-
-            {/* 내용 박스 */}
-            <div className="no-scrollbar mt-[-8%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[10%]">
-              {finderTab === 'search' ? (
-                <div>
-                  {/* 검색창 — 에셋 나오면 배경 이미지로 교체 */}
-                  <div className="flex items-center gap-2 rounded-full border-2 border-border bg-surface-2 px-3 py-1">
-                    <input
-                      value={keyword}
-                      onChange={(e) => setKeyword(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      placeholder="친구 닉네임 입력"
-                      className="min-w-0 flex-1 bg-transparent font-galmuri11 outline-none placeholder:text-ink-dim"
-                    />
-                    <button onClick={handleSearch} disabled={busy} aria-label="검색"
-                            className="btn-icon flex-none px-1 text-[13px] disabled:opacity-50">
-                      🔍
-                    </button>
-                  </div>
-
-                  {searchResult === 'none' && (
-                    <p className="mt-4 text-center font-galmuri11 text-[10px] text-ink-dim">
-                      해당 닉네임의 사용자를 찾을 수 없습니다.
-                    </p>
-                  )}
-
-                  {searchResult && searchResult !== 'none' && (
-                    <>
-                      <div className="mt-3 flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
-                        <img src="/assets/char/Portrait.png" alt=""
-                             className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
-                             draggable={false} />
-                        <span className="truncate font-galmuri9 text-[12px] font-bold text-ink">
-                          {label(searchResult)}
-                        </span>
-                      </div>
-                    {/* 친구 신청 버튼 */}
-                    <div className="mt-3 flex justify-center">
-                      <button
-                        onClick={handleSendRequest}
-                        disabled={busy}
-                        className="btn-icon w-[22%] min-w-[80px] disabled:opacity-50"
-                      >
-                        <img
-                          src="/assets/ui/FriendApplication.png"
-                          alt="친구 신청"
-                          className="block h-auto w-full select-none"
-                          draggable={false}
-                        />
-                      </button>
-                    </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                requests.length === 0 ? (
-                  <p className="mt-8 text-center font-galmuri11 text-[10px] text-ink-dim">
-                    받은 요청이 없습니다.
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    {requests.map((req) => (
-                      <div key={req.id} className="flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
-                        <img src="/assets/char/Portrait.png" alt=""
-                             className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
-                             draggable={false} />
-                        <span className="min-w-0 flex-1 truncate font-galmuri9 text-[12px] font-bold text-ink">
-                          {label(req.requester)}
-                        </span>
-                        <button onClick={() => handleAccept(req.id)} disabled={busy}
-                                className="flex-none rounded-full border-2 border-line bg-accent px-3 py-1.5 font-galmuri9 text-[11px] font-bold text-accent-ink disabled:opacity-50">
-                          수락
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )}
-            </div>
-
-            {/* 닫기(뒤로가기) */}
-            <div className="mt-[3%] flex flex-none items-center">
-              <button onClick={closeFinder} aria-label="친구 목록으로" className="w-[13%]">
-                <img src="/assets/ui/Back.png" alt="" className="block w-full select-none" draggable={false} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── 친구 상세 모달 ── */}
       {viewing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
              onClick={() => setViewing(null)}>
-          <div className="max-h-[80dvh] w-full max-w-[360px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
+          <div className="relative flex max-h-[80dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1.5">
-              <span className="flex-1 truncate font-galmuri9 text-[12px] font-bold text-accent-ink">
-                {viewing.profile.nickname ?? viewing.profile.full_name}
-              </span>
-              <button onClick={() => setViewing(null)} aria-label="닫기" className="btn-icon w-[18px] flex-none">
-                <img src="/assets/ui/XButton.png" alt="" className="block w-full" draggable={false} />
-              </button>
-            </div>
 
-            <div className="no-scrollbar max-h-[62dvh] overflow-y-auto p-[5%]">
+            {/* 타이틀바 높이만큼 자리 확보 */}
+            <div className="flex-none"
+                 style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                 aria-hidden="true" />
+
+            {/* 본문 */}
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[5%]">
               {/* 한 줄 소개 */}
               <p className="text-center font-galmuri11 text-[13px] text-ink-dim">
                 “{viewing.profile.bio || '한 줄 소개가 없어요'}”
@@ -383,9 +345,21 @@ export default function FriendsPage() {
                 친구 삭제
               </button>
             </div>
+
+            {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0">
+              <img src="/assets/ui/MiniWindowBar.png" alt=""
+                   className="block w-full select-none" draggable={false} />
+              <span className="absolute inset-y-0 left-[10%] right-[9%] flex items-center truncate font-galmuri9 text-[13px] font-normal text-ink">
+                {viewing.profile.nickname ?? viewing.profile.full_name}
+              </span>
+              <button onClick={() => setViewing(null)} aria-label="닫기"
+                      className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
+            </div>
           </div>
         </div>
       )}
+
     </div>
   )
 }

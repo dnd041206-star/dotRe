@@ -105,7 +105,7 @@ export default function WeeklyPage() {
             <p className="font-galmuri11 text-[12px] leading-relaxed text-ink">
               이번 주 주간평가<br />보너스 아이템은...
             </p>
-            <p className="mt-1 font-galmuri9 text-[17px] font-bold text-white">
+            <p className="mt-1 font-galmuri9 text-[17px] font-regular text-white">
               <span className="[text-shadow:_-1.5px_0_var(--color-accent-2),_0_1.5px_var(--color-accent-2),_1.5px_0_var(--color-accent-2),_0_-1.5px_var(--color-accent-2)]">
                 {current.bonusLabel}
               </span>
