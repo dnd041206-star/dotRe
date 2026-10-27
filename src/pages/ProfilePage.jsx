@@ -259,7 +259,7 @@ export default function ProfilePage() {
                          className="mt-2 w-full rounded-[6px] border-2 border-border px-2 py-1 font-galmuri11" />
                 ) : (
                   <input value={draft} maxLength={30}
-                         placeholder="예) 오늘도 평범한 하루"
+                         placeholder="안녕하세요."
                          onChange={(e) => setDraft(e.target.value)}
                          className="mt-2 w-full rounded-[6px] border-2 border-border px-2 py-1 font-galmuri11" />
                 )}
