@@ -14,6 +14,10 @@ const DEV_IDS = new Set(
   (process.env.DEV_USER_IDS || "").split(",").map((s) => s.trim()).filter(Boolean)
 );
 
+// ⚠️ 시연용 임시 플래그 — 주간평가 요일 제한(일요일만) 해제.
+// 시연 끝나면 false로 되돌릴 것.
+const DEMO_FORCE_SUNDAY = true;
+
 /** 오늘 00:00 (서버 로컬 기준) */
 function todayStart() {
   const d = new Date();
@@ -205,7 +209,8 @@ async function buildWeek(userId, start, claimedMap) {
   const result = evaluate(items, bonus.key);
   const key = toKey(start);
   const isCurrent = key === toKey(weekStartOf());
-  const isSunday = new Date().getDay() === 0;
+  // const isSunday = new Date().getDay() === 0;
+  const isSunday = DEMO_FORCE_SUNDAY || new Date().getDay() === 0;
 
   return {
     weekStart: key,
@@ -260,7 +265,8 @@ app.post("/api/weekly/claim", requireAuth, async (req, res) => {
     if (week.reward <= 0) return res.status(400).json({ error: "받을 보상이 없습니다" });
 
     const isCurrent = weekStart === toKey(weekStartOf());
-    if (isCurrent && new Date().getDay() !== 0) {
+    // if (isCurrent && new Date().getDay() !== 0) {
+    if (isCurrent && !DEMO_FORCE_SUNDAY && new Date().getDay() !== 0) {
       return res.status(400).json({ error: "평가는 일요일에 열려요" });
     }
 
