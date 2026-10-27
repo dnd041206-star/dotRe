@@ -32,7 +32,7 @@ export default function ProfilePage() {
 
   const [info, setInfo] = useState(null)
   const [showSettings, setShowSettings] = useState(false)   // 내 정보 변경 모달
-  const [editField, setEditField] = useState(null)          // 'nickname' | 'birthday'
+  const [editField, setEditField] = useState(null)          // 'nickname' | 'birthday' | 'bio'
   const [draft, setDraft] = useState('')
   const [slotIndex, setSlotIndex] = useState(null)
   const [myItems, setMyItems] = useState([])
@@ -63,17 +63,18 @@ export default function ProfilePage() {
 
   const startEdit = (field) => {
     setEditField(field)
-    setDraft(field === 'nickname'
-      ? (info.profile.nickname ?? '')
-      : (info.profile.birthday ? String(info.profile.birthday).slice(0, 10) : ''))
+    if (field === 'nickname') setDraft(info.profile.nickname ?? '')
+    else if (field === 'birthday') setDraft(info.profile.birthday ? String(info.profile.birthday).slice(0, 10) : '')
+    else setDraft(info.profile.bio ?? '')
   }
 
   const saveField = async () => {
     setBusy(true)
     try {
-      const fields = editField === 'nickname'
-        ? { nickname: draft.trim() || null }
-        : { birthday: draft || null }
+      const fields =
+        editField === 'nickname' ? { nickname: draft.trim() || null } :
+        editField === 'birthday' ? { birthday: draft || null } :
+        { bio: draft.trim() || null }
       const r = await updateProfile(myId, fields)
       if (!r.ok && r.reason === 'duplicate') {
         alert('이미 사용 중인 닉네임입니다.')
@@ -218,6 +219,15 @@ export default function ProfilePage() {
                   </span>
                 </button>
 
+                <button onClick={() => startEdit('bio')}
+                        className="btn-icon flex items-center justify-between py-1">
+                  <span className="font-galmuri11 text-[16px] text-ink">한 줄 소개</span>
+                  <span className="flex items-center gap-2 font-galmuri11 text-[14px] text-ink-dim">
+                    <span className="max-w-[120px] truncate">{info.profile.bio || '미설정'}</span>
+                    <span className="text-[13px]">›</span>
+                  </span>
+                </button>
+
                 <p className="mt-[20%] text-center font-galmuri11 text-[11px] text-ink-dim">
                   정보 변경 후 바로 프로필에 적용됩니다.
                 </p>
@@ -237,14 +247,19 @@ export default function ProfilePage() {
             ) : (
               <div className="mt-[6%]">
                 <p className="font-galmuri11 text-[11px] text-ink">
-                  {editField === 'nickname' ? '닉네임' : '생일'}
+                  {editField === 'nickname' ? '닉네임' : editField === 'birthday' ? '생일' : '한 줄 소개'}
                 </p>
                 {editField === 'nickname' ? (
                   <input value={draft} maxLength={12}
                          onChange={(e) => setDraft(e.target.value)}
                          className="mt-2 w-full rounded-[6px] border-2 border-border px-2 py-1 font-galmuri11" />
-                ) : (
+                ) : editField === 'birthday' ? (
                   <input type="date" value={draft}
+                         onChange={(e) => setDraft(e.target.value)}
+                         className="mt-2 w-full rounded-[6px] border-2 border-border px-2 py-1 font-galmuri11" />
+                ) : (
+                  <input value={draft} maxLength={30}
+                         placeholder="예) 오늘도 평범한 하루"
                          onChange={(e) => setDraft(e.target.value)}
                          className="mt-2 w-full rounded-[6px] border-2 border-border px-2 py-1 font-galmuri11" />
                 )}
