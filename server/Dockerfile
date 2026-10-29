@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:22-slim
 
 # 파이썬 + pip 설치
 RUN apt-get update && apt-get install -y --no-install-recommends \
