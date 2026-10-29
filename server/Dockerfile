@@ -22,5 +22,5 @@ COPY . .
 ENV PYTHON_BIN=/usr/bin/python3
 ENV POSTPROCESS_PY=/app/postprocess_simple.py
 
-EXPOSE 3001
+EXPOSE 10000
 CMD ["node", "index.js"]
