@@ -9,7 +9,10 @@ const WINDOWBAR_RATIO = 318 / 1610 // ≈ 0.1975
  *  bg        → 창 본체 전체 배경 이미지. 타이틀바 뒤까지 덮는다 (방 편집 등) */
 export default function RetroWindow({ title = 'Dotre Lab - Report', activeTab = null, bare = false, bg = null, children }) {
   return (
-    <div className="flex min-h-0 flex-1 items-center justify-center">
+    <div
+      className="flex min-h-0 flex-1 items-center justify-center"
+      style={{ paddingBottom: '10px' }}
+    >
       <div
         className="relative flex min-h-0 flex-col shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
         style={{ height: '100%', aspectRatio: `1 / ${WINDOW_RATIO}`, maxWidth: WINDOW_MAX_W }}
