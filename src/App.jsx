@@ -16,6 +16,8 @@ import ShopPage from './pages/ShopPage'
 import RoomEditPage from './pages/RoomEditPage'
 import CustomizePage from './pages/CustomizePage'
 import BgmPlayer from './components/BgmPlayer'
+import AdminPage from './pages/AdminPage'
+
 
 /** 앱 셸 — 세로 플렉스. 본문만 스크롤되고 탭바는 항상 바닥에.
  *  withWindow=false → 레트로윈도우 없이 본문만
@@ -108,6 +110,15 @@ function FullLayout() {
   )
 }
 
+/** 탭바 X + 창 X + 흰 배경 (관리자) */
+function AdminLayout() {
+  return (
+    <ProtectedRoute>
+      <Shell withTabBar={false} withWindow={false} whiteBg />
+    </ProtectedRoute>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -153,6 +164,12 @@ export default function App() {
           <Route path="/write" element={<DiaryWritePage />} />
           <Route path="/item/:itemId" element={<ItemResultPage />} />
         </Route>
+
+        {/* 관리자 전용 화면 */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
+
       </Routes>
     </BrowserRouter>
   )

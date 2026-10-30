@@ -90,3 +90,31 @@ export function equipAvatarPart(category, partId) {
 export function receiveTradeApi(tradeId) {
   return request(`/api/trades/${tradeId}/receive`, { method: 'POST' })
 }
+
+// ── 관리자: 가구 카탈로그 ──
+export function getAdminFurniture() {
+  return request('/api/admin/furniture')
+}
+export function createFurnitureCatalog(payload) {
+  return request('/api/admin/furniture', { method: 'POST', body: JSON.stringify(payload) })
+}
+export function updateFurnitureCatalog(id, payload) {
+  return request(`/api/admin/furniture/${id}`, { method: 'PATCH', body: JSON.stringify(payload) })
+}
+export function deleteFurnitureCatalog(id) {
+  return request(`/api/admin/furniture/${id}`, { method: 'DELETE' })
+}
+
+// ── 관리자: 아바타 파츠 ──
+export function getAdminAvatarParts() {
+  return request('/api/admin/avatar-parts')
+}
+export function createAvatarPart(payload) {
+  return request('/api/admin/avatar-parts', { method: 'POST', body: JSON.stringify(payload) })
+}
+export function updateAvatarPart(id, payload) {
+  return request(`/api/admin/avatar-parts/${id}`, { method: 'PATCH', body: JSON.stringify(payload) })
+}
+export function deleteAvatarPart(id) {
+  return request(`/api/admin/avatar-parts/${id}`, { method: 'DELETE' })
+}

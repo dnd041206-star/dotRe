@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { requireAuth } from "./lib/auth.js";
+import { requireAuth, requireAdmin } from "./lib/auth.js";
 import { enqueue } from "./lib/queue.js";
 import { generateItem } from "./pipeline/generateItem.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
@@ -651,4 +651,174 @@ app.post("/api/trades/:tradeId/receive", requireAuth, async (req, res) => {
   }
 });
 
+/** ───────── 관리자: 가구 카탈로그 CRUD ───────── */
+app.get("/api/admin/furniture", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("furniture_catalog")
+      .select("id, category, name, image_url, price")
+      .order("category", { ascending: true })
+      .order("name", { ascending: true });
+    if (error) throw error;
+    res.json({ items: data });
+  } catch (err) {
+    console.error("[admin/furniture]", err);
+    res.status(500).json({ error: "목록을 불러오지 못했습니다" });
+  }
+});
+
+app.post("/api/admin/furniture", requireAuth, requireAdmin, async (req, res) => {
+  const { category, name, image_url, price } = req.body;
+  if (!category || !name || !image_url || price == null) {
+    return res.status(400).json({ error: "모든 항목을 입력해주세요" });
+  }
+  if (!FURNITURE_CATEGORY_KEYS.includes(category)) {
+    return res.status(400).json({ error: "잘못된 카테고리입니다" });
+  }
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("furniture_catalog")
+      .insert({ category, name, image_url, price: Number(price) })
+      .select("id, category, name, image_url, price")
+      .single();
+    if (error) throw error;
+    res.json({ ok: true, item: data });
+  } catch (err) {
+    console.error("[admin/furniture/create]", err);
+    res.status(500).json({ error: "등록에 실패했습니다" });
+  }
+});
+
+app.patch("/api/admin/furniture/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { category, name, image_url, price } = req.body;
+  if (category && !FURNITURE_CATEGORY_KEYS.includes(category)) {
+    return res.status(400).json({ error: "잘못된 카테고리입니다" });
+  }
+  const fields = {};
+  if (category !== undefined) fields.category = category;
+  if (name !== undefined) fields.name = name;
+  if (image_url !== undefined) fields.image_url = image_url;
+  if (price !== undefined) fields.price = Number(price);
+
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("furniture_catalog")
+      .update(fields)
+      .eq("id", id)
+      .select("id, category, name, image_url, price")
+      .single();
+    if (error) throw error;
+    res.json({ ok: true, item: data });
+  } catch (err) {
+    console.error("[admin/furniture/update]", err);
+    res.status(500).json({ error: "수정에 실패했습니다" });
+  }
+});
+
+app.delete("/api/admin/furniture/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { error } = await supabaseAdmin.from("furniture_catalog").delete().eq("id", id);
+    if (error) {
+      if (error.code === "23503") {
+        return res.status(400).json({ error: "이미 구매한 사용자가 있어 삭제할 수 없어요" });
+      }
+      throw error;
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("[admin/furniture/delete]", err);
+    res.status(500).json({ error: "삭제에 실패했습니다" });
+  }
+});
+
+/** ───────── 관리자: 아바타 파츠 CRUD ───────── */
+app.get("/api/admin/avatar-parts", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("avatar_parts")
+      .select("id, category, name, image_url, price, is_default")
+      .order("category", { ascending: true })
+      .order("name", { ascending: true });
+    if (error) throw error;
+    res.json({ items: data });
+  } catch (err) {
+    console.error("[admin/avatar-parts]", err);
+    res.status(500).json({ error: "목록을 불러오지 못했습니다" });
+  }
+});
+
+app.post("/api/admin/avatar-parts", requireAuth, requireAdmin, async (req, res) => {
+  const { category, name, image_url, price, is_default } = req.body;
+  if (!category || !name || !image_url) {
+    return res.status(400).json({ error: "모든 항목을 입력해주세요" });
+  }
+  if (!AVATAR_CATEGORY_KEYS.includes(category)) {
+    return res.status(400).json({ error: "잘못된 카테고리입니다" });
+  }
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("avatar_parts")
+      .insert({
+        category, name, image_url,
+        price: Number(price) || 0,
+        is_default: !!is_default,
+      })
+      .select("id, category, name, image_url, price, is_default")
+      .single();
+    if (error) throw error;
+    res.json({ ok: true, item: data });
+  } catch (err) {
+    console.error("[admin/avatar-parts/create]", err);
+    res.status(500).json({ error: "등록에 실패했습니다" });
+  }
+});
+
+app.patch("/api/admin/avatar-parts/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { category, name, image_url, price, is_default } = req.body;
+  if (category && !AVATAR_CATEGORY_KEYS.includes(category)) {
+    return res.status(400).json({ error: "잘못된 카테고리입니다" });
+  }
+  const fields = {};
+  if (category !== undefined) fields.category = category;
+  if (name !== undefined) fields.name = name;
+  if (image_url !== undefined) fields.image_url = image_url;
+  if (price !== undefined) fields.price = Number(price);
+  if (is_default !== undefined) fields.is_default = !!is_default;
+
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("avatar_parts")
+      .update(fields)
+      .eq("id", id)
+      .select("id, category, name, image_url, price, is_default")
+      .single();
+    if (error) throw error;
+    res.json({ ok: true, item: data });
+  } catch (err) {
+    console.error("[admin/avatar-parts/update]", err);
+    res.status(500).json({ error: "수정에 실패했습니다" });
+  }
+});
+
+app.delete("/api/admin/avatar-parts/:id", requireAuth, requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { error } = await supabaseAdmin.from("avatar_parts").delete().eq("id", id);
+    if (error) {
+      if (error.code === "23503") {
+        return res.status(400).json({ error: "이미 구매/장착한 사용자가 있어 삭제할 수 없어요" });
+      }
+      throw error;
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("[admin/avatar-parts/delete]", err);
+    res.status(500).json({ error: "삭제에 실패했습니다" });
+  }
+});
+
 app.listen(PORT, () => console.log(`서버 실행 중 → http://localhost:${PORT}`));
+
