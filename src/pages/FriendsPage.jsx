@@ -126,7 +126,7 @@ export default function FriendsPage() {
     return (
     <div className="flex h-full flex-col px-[3.5%] py-[3%]">
       {/* ── 상단 탭 ── */}
-      <div className="relative flex-none">
+      <div className="relative z-10 flex-none">
         {showFinder ? (
           <>
             <img
@@ -153,7 +153,7 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-              <div className="no-scrollbar mt-[-2%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[4%]">
+      <div className="no-scrollbar mt-[-3%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[7%]">
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
@@ -169,14 +169,14 @@ export default function FriendsPage() {
                     const d = await getProfileFull(f.id)
                     setViewing({ relationId: f.relationId, ...d })
                   }}
-                  className="flex w-full items-center gap-3 rounded-[6px] bg-surface-2 p-2 text-left"
+                  className="flex w-full items-center gap-2 rounded-[6px] bg-surface-2 p-1.5 text-left"
                 >
                   <img src="/assets/char/Portrait.png" alt=""
-                       className="h-12 w-12 flex-none rounded-full border-1 border-border bg-white object-cover"
+                       className="h-10 w-10 flex-none rounded-full border-1 border-border bg-white object-cover"
                        draggable={false} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-galmuri9 text-[12px] font-bold text-ink">{label(f)}</p>
-                    <p className="mt-1 truncate rounded-[4px] bg-white px-2 py-1 font-galmuri11 text-[10px] text-ink-dim">
+                    <p className="truncate font-galmuri9 text-[11px] font-bold text-ink">{label(f)}</p>
+                    <p className="mt-0.5 truncate rounded-[4px] bg-white px-2 py-0.5 font-galmuri11 text-[9px] text-ink-dim">
                       {f.bio || '한 줄 소개가 없어요'}
                     </p>
                   </div>
