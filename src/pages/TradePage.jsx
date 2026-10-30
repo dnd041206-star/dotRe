@@ -142,16 +142,18 @@ export default function TradePage() {
   const label = (p) => p?.nickname ?? p?.full_name ?? p?.email ?? '알 수 없음'
 
   return (
-    <div className="flex h-full flex-col px-[5%] py-[4%]">
+    <div className="flex h-full max-h-full min-h-0 flex-col overflow-hidden px-[5%] py-[4%]">
 
       {/* ── 제목 ── */}
-      <h2 className="mt-[20%] flex-none text-center font-galmuri9 text-[26px] font-bold text-accent-2 [text-shadow:_-1.5px_0_white,_0_1.5px_white,_1.5px_0_white,_0_-1.5px_white]"
+      <h2 className="flex-none text-center font-galmuri9 text-[26px] font-bold text-accent-2 [text-shadow:_-1.5px_0_white,_0_1.5px_white,_1.5px_0_white,_0_-1.5px_white]"
           style={{ '--outline': '#ffffff' }}>
         교환소
       </h2>
 
+      <div className="min-h-0 flex-[0.6]" />
+
       {/* ── 교환 카드 ── */}
-      <div className="mt-[23%] flex-none rounded-[16px] bg-surface p-[6%] shadow-[3px_3px_0_rgba(0,0,0,0.15)]">
+      <div className="flex-none rounded-[16px] bg-surface p-[6%] shadow-[3px_3px_0_rgba(0,0,0,0.15)]">
         <div className="flex items-start justify-between">
 
           {/* 아이템 슬롯 */}
@@ -177,7 +179,6 @@ export default function TradePage() {
             </span>
           </button>
 
-          {/* 화살표 — 에셋 나오면 <img>로 교체 */}
           <span className="mt-[16%] font-galmuri9 text-[22px] text-ink">▶</span>
 
           {/* 친구 슬롯 */}
@@ -204,7 +205,6 @@ export default function TradePage() {
           </button>
         </div>
 
-        {/* 전송 버튼 */}
         <button onClick={handleTrade}
                 disabled={!selectedFriend || !selectedItem || busy}
                 aria-label="전송"
@@ -214,9 +214,10 @@ export default function TradePage() {
         </button>
       </div>
 
+      <div className="min-h-0 flex-1" />
 
       {/* ── 박사 + 말풍선 ── */}
-      <div className="mt-[5%] flex flex-none items-start">
+      <div className="flex flex-none items-start">
         <img src="/assets/char/hakase_test.png" alt=""
              className="pixel w-[28%] flex-none select-none" draggable={false} />
 
@@ -231,8 +232,10 @@ export default function TradePage() {
         </div>
       </div>
 
+      <div className="min-h-0 flex-[0.6]" />
+
       {/* ── 하단: 뒤로가기 / 보관함 ── */}
-      <div className="mt-auto flex flex-none items-center justify-between pt-[4%]">
+      <div className="flex flex-none items-center justify-between">
         <button onClick={() => navigate('/')} aria-label="홈으로" className="w-[13%]">
           <img src="/assets/ui/Back.png" alt="" className="block w-full select-none" draggable={false} />
         </button>
