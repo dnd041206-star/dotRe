@@ -18,7 +18,6 @@ import RoomEditPage from './pages/RoomEditPage'
 import CustomizePage from './pages/CustomizePage'
 import BgmPlayer from './components/BgmPlayer'
 import AdminPage from './pages/AdminPage'
-import ScaleToFit from './components/ScaleToFit'
 
 /** 앱 셸 — 세로 플렉스. 본문만 스크롤되고 탭바는 항상 바닥에.
  *  withWindow=false → 레트로윈도우 없이 본문만
@@ -33,27 +32,24 @@ function Shell({
   mainFlush = false,
   windowBg = null
 }) {
-  return (
+    return (
     <div className={`shell${whiteBg ? ' shell-plain' : ''}`}>
       {withWindow ? (
-        <RetroWindow bare={windowBare} bg={windowBg}>
+        <RetroWindow bare={windowBare}  bg={windowBg}>
           <main className={`shell-main${(windowBare || mainFlush) ? ' shell-main-flush' : ''}`}>
-            <ScaleToFit>
-              <Outlet />
-            </ScaleToFit>
+            <Outlet />
           </main>
         </RetroWindow>
       ) : (
         <main className="shell-main">
-          <ScaleToFit>
-            <Outlet />
-          </ScaleToFit>
+          <Outlet />
         </main>
       )}
 
       {withTabBar ? (
         <TabBar />
       ) : (
+        /* 탭바 없는 페이지도 창 위치가 같게 — 같은 크기의 빈 자리만 차지 */
         <div className="tabbar" style={{ visibility: 'hidden' }} aria-hidden="true" />
       )}
     </div>
