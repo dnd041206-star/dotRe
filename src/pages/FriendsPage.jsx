@@ -153,9 +153,9 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-      <div className={`no-scrollbar min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] ${
-        showFinder ? 'mt-[-8%] pt-[10%]' : 'mt-[-8%] pt-[10%]'
-      }`}>
+        <div className={`no-scrollbar min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] ${
+          showFinder ? 'mt-[-2%] pt-[4%]' : 'mt-[-2%] pt-[4%]'
+        }`}>
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
