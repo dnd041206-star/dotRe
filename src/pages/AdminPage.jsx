@@ -113,7 +113,7 @@ function CatalogManager({ categories, hasDefaultFlag, load, create, update, remo
   }
 
   return (
-    <div className="flex flex-col gap-6 md:flex-row">
+    <div className="min-h-screen flex flex-col overflow-y-auto bg-white p-5 text-black">
       {/* ── 입력 폼 ── */}
       <form onSubmit={handleSubmit} className="flex w-full flex-none flex-col gap-3 rounded-lg border p-4 md:w-72">
         <h3 className="font-bold">{editingId ? '항목 수정' : '새로 추가'}</h3>

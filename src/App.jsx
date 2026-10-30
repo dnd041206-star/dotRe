@@ -110,15 +110,6 @@ function FullLayout() {
   )
 }
 
-/** 탭바 X + 창 X + 흰 배경 (관리자) */
-function AdminLayout() {
-  return (
-    <ProtectedRoute>
-      <Shell withTabBar={false} withWindow={false} whiteBg />
-    </ProtectedRoute>
-  )
-}
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -165,10 +156,16 @@ export default function App() {
           <Route path="/item/:itemId" element={<ItemResultPage />} />
         </Route>
 
-        {/* 관리자 전용 화면 */}
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminPage />} />
-        </Route>
+        
+        {/* 관리자 전용 화면 — 폰 프레임 제약 없이 전체 화면 */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+/>
 
       </Routes>
     </BrowserRouter>
