@@ -29,13 +29,12 @@ export default function HomePage() {
   const lockWrite = hasWrittenToday && !isDevAccount(session?.user?.id)
 
   return (
-    <div className="flex flex-col gap-3 p-1">
+    <div className="flex h-full min-h-0 flex-col gap-2 p-1">
       {/* 1. 프로필 카드 + 오늘 기록 카드 */}
-      <div className="flex gap-[2%]">
-        {/* 프로필 카드 — 클릭 시 프로필 설정으로 이동 */}
+      <div className="flex flex-none gap-[2%]">
         <button
           onClick={() => navigate('/profile')}
-          className="flex w-[61%] items-center gap-[4%] rounded-xl bg-surface-2 p-[3.5%] text-left"
+          className="flex w-[56%] items-center gap-[4%] rounded-xl bg-surface-2 p-[3.5%] text-left"
         >
           <div className="w-[35%] flex-none overflow-hidden rounded-lg bg-white p-[4%]">
             <img src="/assets/char/Portrait.png" alt="" className="block w-full" draggable={false} />
@@ -56,12 +55,12 @@ export default function HomePage() {
       </div>
 
       {/* 3. 방 (MyRoom) */}
-      <div className="relative w-full">
-        <MyRoom className="rounded-2xl border border-white/10" />
+      <div className="flex min-h-0 flex-1 items-center justify-center">
+        <MyRoom className="h-full rounded-2xl border border-white/10" />
       </div>
 
       {/* 4. 하단 버튼 — 상점 / 방꾸미기 / 튜토리얼 + 일기작성 */}
-      <div className="mt-0 flex w-full items-end gap-[1%]">
+      <div className="mt-0 flex w-full flex-none items-end gap-[1%]">
         <button onClick={() => navigate('/shop')} aria-label="상점"
                 className="btn-icon w-[17%] flex-none">
           <img src="/assets/ui/ShopIcon.png" alt="상점"

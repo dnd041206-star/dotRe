@@ -23,7 +23,7 @@ export default function MyRoom({ className = '', background }) {
   ]
  
   return (
-    <div className={`relative aspect-square w-full overflow-hidden ${className}`}>
+    <div className={`relative aspect-square overflow-hidden ${className}`}>
       {/* ▼ 방 배경 — 구매 배경(background) 있으면 그걸, 없으면 기본 배경 */}
       <img
         src={background || DEFAULT_ROOM_BG}

@@ -153,9 +153,7 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-        <div className={`no-scrollbar min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] ${
-          showFinder ? 'mt-[-2%] pt-[4%]' : 'mt-[-2%] pt-[4%]'
-        }`}>
+              <div className="no-scrollbar mt-[-2%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[4%]">
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
@@ -199,7 +197,7 @@ export default function FriendsPage() {
               />
               <button onClick={handleSearch} disabled={busy} aria-label="검색"
                       className="btn-icon flex-none px-1 disabled:opacity-50">
-                <img src="/assets/icons/Search.png" alt="" className="pixel h-5 w-5" draggable={false} />
+                <img src="/assets/icons/search.png" alt="" className="pixel h-5 w-5" draggable={false} />
               </button>
             </div>
 

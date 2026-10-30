@@ -39,20 +39,20 @@ export default function HomeHeader({ onStatusLoaded }) {
   }, [session, onStatusLoaded])
 
   return (
-    <div className="flex flex-col items-end gap-1.5 font-galmuri9">
+    <div className="flex flex-col items-end gap-1 font-galmuri9">
       {/* 오늘 날짜 */}
-      <span className="text-[11px] font-bold text-black">{todayStr}</span>
+      <span className="whitespace-nowrap text-[10px] font-bold text-black">{todayStr}</span>
 
-      {/* 오늘 작성 여부 & 연속 작성일 배지 */}
-      <div className="flex flex-wrap items-center justify-end gap-1.5">
-        <span
-          className={`rounded-full border border-line px-3 py-1 text-[10px] text-black 
-            ${writtenToday ? 'bg-accent' : 'bg-white'}`}> {writtenToday ? '오늘 기록 완료!' : '오늘 미작성'}
-        </span>
-        <span className=" px-2 py-0.5 text-[11px] text-black">
-          연속 작성 {streak}일째
-        </span>
-      </div>
+      {/* 오늘 작성 여부 & 연속 작성일 */}
+      <span
+        className={`whitespace-nowrap rounded-full border border-line px-2 py-0.5 text-[9px] text-black ${
+          writtenToday ? 'bg-accent' : 'bg-white'
+        }`}>
+        {writtenToday ? '오늘 기록 완료!' : '오늘 미작성'}
+      </span>
+      <span className="whitespace-nowrap text-[10px] text-black">
+        연속 작성 {streak}일째
+      </span>
     </div>
   )
 }

@@ -55,7 +55,7 @@ export default function RetroWindow({ title = 'Dotre Lab - Report', activeTab = 
               {title}
             </span>
             <div
-              className="absolute inset-x-0 left-[7%] top-[62%] flex gap-10 overflow-x-auto px-3 font-galmuri9 text-[12px] text-ink-dim"
+              className="absolute left-[7%] right-[7%] top-[62%] flex justify-between overflow-hidden font-galmuri9 text-[11px] text-ink-dim"
               aria-hidden="true"
             >
               {MENU_TABS.map((m) => (
