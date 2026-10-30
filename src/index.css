@@ -53,6 +53,7 @@
 html, body, #root {
   height: 100%;
   margin: 0;
+  overflow: hidden;   /* 바깥 페이지 자체는 스크롤 안 되게 — 스크롤은 .shell-main 안에서만 */
 }
 
 body {
@@ -72,16 +73,16 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: var(--shell-max);
-  height: 100dvh;                          /* vh 아님 — 아래 설명 */
+  height: 100vh;    /* dvh 미지원 브라우저(일부 인앱 브라우저)용 폴백 */
+  height: 100dvh;
   margin: 0 auto;
   overflow: hidden;
 
-
-background-color: #0D0D1A;
+  background-color: #0D0D1A;
   background-image: url('/assets/ui/bg-space.png');
   background-size: 450px auto;
-  background-position: bottom center;   /* top center → bottom center */
-  background-repeat: no-repeat;         /* repeat-y → no-repeat */
+  background-position: bottom center;
+  background-repeat: no-repeat;
   image-rendering: pixelated;
 }
 
@@ -98,15 +99,11 @@ background-color: #0D0D1A;
    배경 이미지가 나오면 background-color를 지우고 아래 주석을 풀면 됨.
    ※ 폭은 .shell의 우주배경과 같은 450px 기준 — 450의 약수 폭으로 그릴 것 */
 .shell.shell-plain {
-  /*background-color: #ffffff;
-  background-image: none;*/
-
    background-image: url('/assets/ui/PageBg.png');
-     background-size: 450px auto;
-     background-position: bottom center;
-     background-repeat: no-repeat; 
+   background-size: cover;
+   background-position: bottom center;
+   background-repeat: no-repeat;
 }
-
 /* 하단 탭바 — 0단계에서 토큰 색상으로 재스킨 (구조는 TabBar.jsx 그대로) */
 .tabbar {
   flex: none;

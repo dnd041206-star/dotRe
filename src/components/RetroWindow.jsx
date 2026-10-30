@@ -1,9 +1,8 @@
 const MENU_TABS = ['Exchange', 'Calendar', 'Report', 'Friends']
 
-const WINDOW_W = '90%'     // 창 가로 폭 (부모 폭 기준)
-const WINDOW_RATIO = 1.7   // 명세서 목업 창 비율(세로÷가로) — 높이는 여기서 자동 계산
+const WINDOW_MAX_W = '90%' // 창 최대 가로 폭 (세로가 넉넉한 화면에서 과하게 넓어지지 않게)
+const WINDOW_RATIO = 1.7   // 명세서 목업 창 비율(세로÷가로)
 
-// WindowBar.png 실제 크기(1610x318) 비율 — 콘텐츠가 시작할 위치를 여기서 자동 계산
 const WINDOWBAR_RATIO = 318 / 1610 // ≈ 0.1975
 
 /** bare=true → 창 크기/테두리만 쓰고 타이틀바·메뉴탭은 그리지 않음 (상점 등)
@@ -13,14 +12,12 @@ export default function RetroWindow({ title = 'Dotre Lab - Report', activeTab = 
     <div className="flex min-h-0 flex-1 items-center justify-center">
       <div
         className="relative flex min-h-0 flex-col shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
-        style={{ width: WINDOW_W, aspectRatio: `1 / ${WINDOW_RATIO}`, maxHeight: '100%' }}
+        style={{ height: '100%', aspectRatio: `1 / ${WINDOW_RATIO}`, maxWidth: WINDOW_MAX_W }}
       >
-        {/* 흰 배경 — 창 맨 위(0)부터 시작. 이미지가 이 위에 겹쳐서 얹히므로 틈이 생길 수가 없음 */}
         <div
           className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface text-black"
           style={{ backgroundColor: '#ffffff' }}
         >
-          {/* 창 배경 — 타이틀바 투명 영역 뒤로 흰색이 비치지 않게 맨 아래에 깔아둔다 */}
           {bg && (
             <img
               src={bg}
@@ -30,8 +27,6 @@ export default function RetroWindow({ title = 'Dotre Lab - Report', activeTab = 
             />
           )}
 
-          {/* 이미지가 덮을 만큼만 투명 여백 — 비율로 계산해서 항상 이미지 높이랑 정확히 일치.
-              bare일 땐 타이틀바가 없으므로 이 여백도 없앤다 */}
           {!bare && (
             <div
               className="relative flex-none"
@@ -40,13 +35,11 @@ export default function RetroWindow({ title = 'Dotre Lab - Report', activeTab = 
             />
           )}
 
-          {/* 배경 위로 올라오도록 relative */}
           <div className="relative flex min-h-0 flex-1 flex-col">
             {children}
           </div>
         </div>
 
-        {/* 타이틀바+탭줄 이미지 — 흰 배경 위에 그대로 겹쳐서 얹음 */}
         {!bare && (
           <div className="absolute inset-x-0 top-0">
             <img
