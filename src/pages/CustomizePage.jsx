@@ -56,23 +56,26 @@ export default function CustomizePage() {
   const pageParts = parts.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE)
   const slots = Array.from({ length: PER_PAGE }, (_, i) => pageParts[i] ?? null)
 
-  return (
-    <div className="relative flex h-full flex-col px-[4%] py-[4%]">
+    return (
+    <div className="relative flex h-full max-h-full min-h-0 flex-col overflow-hidden px-[4%] py-[4%]">
 
-
-       {/* ── 제목 ── */}
-      <h2 className="mx-auto translate-y-[35px] flex-none border-b-2 border-accent-2 pb-0.5 font-galmuri9 text-[26px] text-accent-2 text-outline"
+      {/* ── 제목 ── */}
+      <h2 className="mx-auto flex-none border-b-2 border-accent-2 pb-0.5 font-galmuri9 text-[26px] text-accent-2 text-outline"
           style={{ '--outline': '#ffffff' }}>
         커스터마이징
       </h2>
 
+      <div className="min-h-0 flex-[0.5]" />
+
       {/* ── 아바타 ── */}
-      <div className="flex flex-none justify-center pt-[9%]">
-        <AvatarPreview equipped={data.equipped} items={data.items} className="w-[40%]" />
+      <div className="flex flex-none justify-center">
+        <AvatarPreview equipped={data.equipped} items={data.items} className="w-[26%]" />
       </div>
 
+      <div className="min-h-0 flex-1" />
+
       {/* ── 파츠 패널 ── */}
-      <div className="translate-y-[20px] mt-auto flex-none rounded-[12px] border-2 border-border bg-surface p-[3%]">
+      <div className="flex-none rounded-[12px] border-2 border-border bg-surface p-[3%]">
 
         {/* 얼굴 / 헤어 / 의상 탭 */}
         <div className="relative">
@@ -87,7 +90,7 @@ export default function CustomizePage() {
           ))}
         </div>
 
-        {/* 파츠 격자 — 에셋 나오기 전이라 빈 칸 */}
+        {/* 파츠 격자 */}
         <div className="mt-[6%] grid grid-cols-3 gap-[3%]">
           {slots.map((p, i) =>
             p ? (
@@ -118,8 +121,10 @@ export default function CustomizePage() {
         </div>
       </div>
 
+      <div className="min-h-0 flex-[0.4]" />
+
       {/* ── 뒤로가기 ── */}
-      <div className="translate-y-[30px] mt-[3%] flex flex-none items-center">
+      <div className="flex flex-none items-center">
         <button onClick={() => navigate('/profile')} aria-label="프로필로" className="btn-icon w-[14%]">
           <img src="/assets/ui/Back.png" alt="" className="block w-full select-none" draggable={false} />
         </button>
