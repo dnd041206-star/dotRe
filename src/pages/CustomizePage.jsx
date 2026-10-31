@@ -69,7 +69,7 @@ export default function CustomizePage() {
 
       {/* ── 아바타 ── */}
       <div className="flex flex-none justify-center">
-        <AvatarPreview equipped={data.equipped} items={data.items} className="w-[26%]" />
+        <AvatarPreview equipped={data.equipped} items={data.items} className="w-[48%]" />
       </div>
 
       <div className="min-h-0 flex-1" />
