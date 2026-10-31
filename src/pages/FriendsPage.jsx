@@ -127,7 +127,7 @@ export default function FriendsPage() {
     <div className="flex h-full flex-col px-[3.5%] py-[3%]">
       {/* ── 상단 탭 ── */}
       <div className="relative z-10 flex-none">
-        {showFinder ? (
+        {showFinder ? (   
           <>
             <img
               src={finderTab === 'search' ? '/assets/ui/FriendFind.png' : '/assets/ui/FriendRequest.png'}
@@ -153,7 +153,7 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-        <div className="no-scrollbar -mt-[8px] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[14px]">
+        <div className="no-scrollbar -mt-[12px] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[18px]">
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
