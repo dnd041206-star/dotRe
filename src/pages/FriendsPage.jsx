@@ -153,7 +153,7 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-      <div className="no-scrollbar mt-[-3%] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[7%]">
+        <div className="no-scrollbar -mt-[8px] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[14px]">
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
@@ -209,11 +209,11 @@ export default function FriendsPage() {
 
             {searchResult && searchResult !== 'none' && (
               <>
-                <div className="mt-3 flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
+                <div className="mt-3 flex items-center gap-2 rounded-[6px] bg-surface-2 p-1.5">
                   <img src="/assets/char/Portrait.png" alt=""
-                       className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
+                       className="h-10 w-10 flex-none rounded-full border-1 border-border bg-white object-cover"
                        draggable={false} />
-                  <span className="truncate font-galmuri9 text-[12px] font-bold text-ink">
+                  <span className="truncate font-galmuri9 text-[11px] font-bold text-ink">
                     {label(searchResult)}
                   </span>
                 </div>
@@ -237,15 +237,15 @@ export default function FriendsPage() {
           ) : (
             <div className="flex flex-col gap-2">
               {requests.map((req) => (
-                <div key={req.id} className="flex items-center gap-3 rounded-[6px] bg-surface-2 p-2">
+                <div key={req.id} className="flex items-center gap-2 rounded-[6px] bg-surface-2 p-1.5">
                   <img src="/assets/char/Portrait.png" alt=""
-                       className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
+                       className="h-10 w-10 flex-none rounded-full border-1 border-border bg-white object-cover"
                        draggable={false} />
-                  <span className="min-w-0 flex-1 truncate font-galmuri9 text-[12px] font-bold text-ink">
+                  <span className="min-w-0 flex-1 truncate font-galmuri9 text-[11px] font-bold text-ink">
                     {label(req.requester)}
                   </span>
                   <button onClick={() => handleAccept(req.id)} disabled={busy}
-                          className="flex-none rounded-full border-2 border-line bg-accent px-3 py-1.5 font-galmuri9 text-[11px] font-bold text-accent-ink disabled:opacity-50">
+                          className="flex-none rounded-full border-2 border-line bg-accent px-2.5 py-1 font-galmuri9 text-[10px] font-bold text-accent-ink disabled:opacity-50">
                     수락
                   </button>
                 </div>
