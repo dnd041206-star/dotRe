@@ -1,8 +1,8 @@
-import { AVATAR_CATEGORY_KEYS } from '../game/avatar'
+/** 쌓는 순서(아래→위): 의상 → 헤어 → 얼굴
+ *  얼굴(눈)이 항상 맨 위에 와서 앞머리에 가려지지 않게 함.
+ *  탭 순서(얼굴/헤어/의상)랑은 별개라 avatar.js의 AVATAR_CATEGORY_KEYS는 안 건드려도 됨 */
+const LAYER_ORDER = ['outfit', 'hair', 'face']
 
-/** 겹치는 순서 = AVATAR_CATEGORY_KEYS 순서 (얼굴 → 헤어 → 의상).
- *  실제로 겹쳐보고 순서가 이상하면(예: 의상이 헤어를 가려야 하는 경우)
- *  avatar.js의 AVATAR_CATEGORY_KEYS 배열 순서를 바꾸면 여기도 같이 바뀜 */
 export default function AvatarPreview({ equipped, items, className = '' }) {
   const findImage = (category) => {
     const id = equipped?.[category]
@@ -11,8 +11,7 @@ export default function AvatarPreview({ equipped, items, className = '' }) {
   }
 
   return (
-    <div className={`relative aspect-square w-full ${className}`}>
-      {/* 베이스 캐릭터 */}
+    <div className={`relative aspect-square ${className}`}>
       <img
         src="/assets/char/CharacterBase.png"
         alt=""
@@ -20,8 +19,7 @@ export default function AvatarPreview({ equipped, items, className = '' }) {
         draggable={false}
       />
 
-      {/* 장착된 파츠 — 카테고리 순서대로 겹치기 */}
-      {AVATAR_CATEGORY_KEYS.map((category) => {
+      {LAYER_ORDER.map((category) => {
         const url = findImage(category)
         if (!url) return null
         return (
