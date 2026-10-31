@@ -1,3 +1,4 @@
+import AvatarPreview from '../components/AvatarPreview'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAvatar, buyAvatarPart, equipAvatarPart } from '../lib/api'
@@ -67,9 +68,7 @@ export default function CustomizePage() {
 
       {/* ── 아바타 ── */}
       <div className="flex flex-none justify-center pt-[9%]">
-        {/* 임시 아바타 — 파츠 에셋 나오면 equipped 이미지들을 겹쳐서 교체 */}
-        <img src="/assets/char/Avatar.png" alt=""
-             className="pixel absolute top-38 w-[35%] select-none" draggable={false} />
+        <AvatarPreview equipped={data.equipped} items={data.items} className="w-[40%]" />
       </div>
 
       {/* ── 파츠 패널 ── */}
