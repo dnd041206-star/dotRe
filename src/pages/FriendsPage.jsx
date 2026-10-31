@@ -12,6 +12,8 @@ import {
 
 import { getProfileFull } from '../lib/profileService'
 import ProfileCard from '../components/ProfileCard'
+import { getAvatar } from '../lib/api'
+import AvatarPreview from '../components/AvatarPreview'
 
 /** MiniWindowBar.png의 세로 비율 (1610×143) */
 const WINDOWBAR_RATIO = 143 / 1610
@@ -22,6 +24,15 @@ const fmtBirthday = (b) => {
   const [, m, d] = String(b).slice(0, 10).split('-')
   return `${Number(m)}월 ${Number(d)}일`
 }
+
+const [catalog, setCatalog] = useState([])
+useEffect(() => { getAvatar().then((d) => setCatalog(d.items)).catch(() => {}) }, [])
+
+const equippedOf = (f) => ({
+  face: f.equipped_face_id,
+  hair: f.equipped_hair_id,
+  outfit: f.equipped_outfit_id,
+})
 
 /** 정보 캡슐 한 줄 — 프로필 페이지와 같은 에셋 */
 function InfoBar({ label, value }) {

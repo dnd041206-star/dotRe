@@ -65,20 +65,18 @@ export async function acceptFriendRequest(requestId) {
   return data
 }
 
-// 5) 내 친구 목록 (수락된 것, 양방향)
 export async function getMyFriends(myId) {
   const { data, error } = await supabase
     .from('friends')
     .select(`
       id, status,
-      user:profiles!friends_user_id_fkey(id, email, full_name, nickname, bio),
-      friend:profiles!friends_friend_id_fkey(id, email, full_name, nickname, bio)
+      user:profiles!friends_user_id_fkey(id, email, full_name, nickname, bio, equipped_face_id, equipped_hair_id, equipped_outfit_id),
+      friend:profiles!friends_friend_id_fkey(id, email, full_name, nickname, bio, equipped_face_id, equipped_hair_id, equipped_outfit_id)
     `)
     .eq('status', 'accepted')
     .or(`user_id.eq.${myId},friend_id.eq.${myId}`)
   if (error) throw error
 
-  // 내가 user쪽이든 friend쪽이든, '상대방'만 추려서 반환
   return data.map((row) => {
     const other = row.user.id === myId ? row.friend : row.user
     return { relationId: row.id, ...other }
