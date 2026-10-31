@@ -153,7 +153,7 @@ export default function FriendsPage() {
       </div>
 
       {/* ── 내용 박스 ── */}
-        <div className="no-scrollbar -mt-[12px] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[18px]">
+        <div className="no-scrollbar -mt-[18px] min-h-0 flex-1 overflow-y-auto rounded-[6px] border-2 border-border bg-surface px-[3%] pb-[3%] pt-[22px]">
         {!showFinder ? (
           /* 친구 목록 */
           friends.length === 0 ? (
