@@ -184,6 +184,8 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      <div className="min-h-0 flex-[0.4]" aria-hidden="true" />
+
       {/* ── 내 정보 변경 모달 ── */}
       {showSettings && (
         <div className="absolute inset-0 z-40 flex items-center justify-center px-[6%] backdrop-blur-sm"

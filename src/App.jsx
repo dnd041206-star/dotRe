@@ -46,12 +46,9 @@ function Shell({
         </main>
       )}
 
-      {withTabBar ? (
-        <TabBar />
-      ) : (
-        /* 탭바 없는 페이지도 창 위치가 같게 — 같은 크기의 빈 자리만 차지 */
-        <div className="tabbar" style={{ visibility: 'hidden' }} aria-hidden="true" />
-      )}
+      {withTabBar
+        ? <TabBar />
+        : <div style={{ flex: 'none', height: 'calc(var(--safe-bottom) + 8px)' }} aria-hidden="true" />}
     </div>
   )
 }
