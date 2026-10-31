@@ -15,11 +15,11 @@ const fmtBirthday = (b) => {
 /** 정보 캡슐 한 줄 */
 function InfoBar({ label, value }) {
   return (
-    <div className="translate-y-[10px] relative w-full">
+    <div className="relative w-full">
       <img src="/assets/ui/ProfileBar.png" alt="" className="block w-full select-none" draggable={false} />
       <div className="absolute inset-x-[5%] inset-y-0 flex items-center justify-between">
-        <span className="font-galmuri11 text-[15px] text-ink">{label}</span>
-        <span className="truncate pl-2 font-galmuri11 text-[13px] text-ink-dim">{value}</span>
+        <span className="flex-none whitespace-nowrap font-galmuri11 text-[13px] text-ink">{label}</span>
+        <span className="min-w-0 truncate pl-2 font-galmuri11 text-[11px] text-ink-dim">{value}</span>
       </div>
     </div>
   )
@@ -120,32 +120,32 @@ export default function ProfilePage() {
     <div className="relative flex h-full flex-col px-[5%] py-[4%]">
 
       {/* ── 닉네임 ── */}
-     <p className="absolute left-0 right-0 top-[17%] flex-none text-center font-galmuri9 text-[18px] text-black text-outline"
+      <p className="flex-none text-center font-galmuri9 text-[18px] text-black text-outline"
          style={{ '--outline': '#FFFF' }}>
         {nickname}
       </p>
 
       {/* ── 아바타 + 좌측 버튼 ── */}
-      <div className="relative mt-[8%] flex flex-none justify-center">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center">
         {/* 좌측 세로 버튼 — 커스텀 / 프로필 설정 */}
-        <div className="absolute left-2 top-35 flex flex-col gap-[14%]">
+        <div className="absolute left-0 top-1/2 flex -translate-y-1/2 flex-col gap-2">
           <button onClick={() => navigate('/customize')} aria-label="아바타 꾸미기"
                   className="btn-icon w-[46px]">
             <img src="/assets/ui/ProfileCustom.png" alt="" className="block w-full select-none" draggable={false} />
           </button>
           <button onClick={() => setShowSettings(true)} aria-label="내 정보 변경"
-                  className="btn-icon absolute top-14 w-[46px]">
+                  className="btn-icon w-[46px]">
             <img src="/assets/ui/ProfileSetting.png" alt="" className="block w-full select-none" draggable={false} />
           </button>
         </div>
 
         {/* 임시 아바타 — 단상 에셋 나오면 아래에 깔면 됨 */}
         <img src="/assets/char/Avatar.png" alt=""
-             className="pixel absolute top-35 w-[35%] select-none" draggable={false} />
+             className="pixel max-h-full w-[35%] select-none object-contain" draggable={false} />
       </div>
 
       {/* ── 정보 카드 ── */}
-      <div className="mt-auto translate-y-[-15px] flex-none rounded-[12px] border-2 border-border bg-surface p-[4%]">
+            <div className="flex-none rounded-[12px] border-2 border-border bg-surface p-[4%]">
         <div className="flex flex-col gap-2">
           <InfoBar label="플레이어 ID" value={info.profile.email ?? session?.user?.email ?? '-'} />
           <InfoBar label="생일" value={fmtBirthday(info.profile.birthday)} />
@@ -178,7 +178,7 @@ export default function ProfilePage() {
       </div>
 
       {/* ── 뒤로가기 ── */}
-      <div className="translate-y-[30px] mt-[-6%] flex flex-none items-center">
+      <div className="mt-[3%] flex flex-none items-center">
         <button onClick={() => navigate('/')} aria-label="홈으로" className="btn-icon w-[15%]">
           <img src="/assets/ui/Back.png" alt="" className="block w-full select-none" draggable={false} />
         </button>
