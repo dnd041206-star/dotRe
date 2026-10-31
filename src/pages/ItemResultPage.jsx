@@ -4,6 +4,13 @@ import { supabase } from '../lib/supabaseClient'
 import { regenerateItem } from '../lib/api'
 import { STAT_KEYS, STAT_LABELS, RARITY_TABLE, statPercent } from '../game/statSystem'
 
+const GRADE_ICON = {
+  normal: '/assets/icons/GradeNormal.png',
+  rare: '/assets/icons/GradeRare.png',
+  epic: '/assets/icons/GradeEpic.png',
+  unique: '/assets/icons/GradeUnique.png',
+}
+
 export default function ItemResultPage() {
   const { itemId } = useParams()
   const navigate = useNavigate()
@@ -123,7 +130,12 @@ export default function ItemResultPage() {
             />
             {/* 등급 배지 — 아이템 칸 좌상단에 걸침 */}
             <div className="absolute -left-[14%] -top-[7%] w-[56%]">
-              <img src="/assets/icons/TestGrade.png" alt="" className="block w-full select-none" draggable={false} />
+              <img
+                src={GRADE_ICON[item.rarity] || GRADE_ICON.normal}
+                alt={rarity.label}
+                className="block w-full select-none"
+                draggable={false}
+              />
             </div>
           </div>
 
