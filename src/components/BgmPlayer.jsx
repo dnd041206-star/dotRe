@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-const BGM_SRC = '/assets/bgm/main_theme.mp3'
+const BGM_SRC = '/assets/BGM/Save%20Point.mp3'
 const STORAGE_KEY = 'dotre_bgm_on'
 
 export default function BgmPlayer() {
@@ -16,21 +16,23 @@ export default function BgmPlayer() {
     }
   }, [])
 
-  const toggle = () => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (playing) {
-      audio.pause()
-      setPlaying(false)
-      localStorage.setItem(STORAGE_KEY, '0')
-    } else {
-      audio.volume = 0.4
-      audio.play().then(() => {
-        setPlaying(true)
-        localStorage.setItem(STORAGE_KEY, '1')
-      }).catch(() => {})
-    }
+ const toggle = () => {
+  const audio = audioRef.current
+  if (!audio) return
+  if (playing) {
+    audio.pause()
+    setPlaying(false)
+    localStorage.setItem(STORAGE_KEY, '0')
+  } else {
+    audio.volume = 0.4
+    audio.play().then(() => {
+      setPlaying(true)
+      localStorage.setItem(STORAGE_KEY, '1')
+    }).catch((err) => {
+      console.error('[BGM] 재생 실패:', err)
+    })
   }
+}
 
   return createPortal(
     <>
