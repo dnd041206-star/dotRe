@@ -39,7 +39,7 @@ export default function HomeHeader({ onStatusLoaded }) {
   }, [session, onStatusLoaded])
 
   return (
-    <div className="flex flex-col items-end gap-1 font-galmuri9">
+      <div className="flex flex-col items-center gap-1 font-galmuri9">
       {/* 오늘 날짜 */}
       <span className="whitespace-nowrap text-[10px] font-bold text-black">{todayStr}</span>
 

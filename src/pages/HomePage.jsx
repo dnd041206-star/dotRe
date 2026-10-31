@@ -49,7 +49,7 @@ export default function HomePage() {
         </button>
 
         {/* 오늘 기록 카드 */}
-        <div className="flex flex-1 flex-col justify-center rounded-xl bg-surface-2 p-[3.5%]">
+        <div className="flex flex-1 flex-col items-center justify-center rounded-xl bg-surface-2 p-[3.5%]">
           <HomeHeader onStatusLoaded={handleStatusLoaded} />
         </div>
       </div>
