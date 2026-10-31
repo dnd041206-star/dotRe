@@ -6,9 +6,6 @@ import { isDevAccount } from '../lib/devAccounts'
 import NutsBadge from '../components/NutsBadge'
 import MyRoom from '../components/MyRoom'
 import HomeHeader from '../components/HomeHeader'
-import { getAvatar } from '../lib/api'
-import AvatarPreview from '../components/AvatarPreview'
-
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -16,12 +13,6 @@ export default function HomePage() {
   const [hasWrittenToday, setHasWrittenToday] = useState(false)
   const [nickname, setNickname] = useState(null)
   const [showTutorial, setShowTutorial] = useState(false)
-  const [avatar, setAvatar] = useState(null)
-  useEffect(() => {
-    if (!session?.user?.id) return
-    getAvatar().then(setAvatar).catch(() => {})
-  }, [session])
-
 
   useEffect(() => {
     const id = session?.user?.id
@@ -46,11 +37,7 @@ export default function HomePage() {
           className="flex w-[56%] items-center gap-[4%] rounded-xl bg-surface-2 p-[3.5%] text-left"
         >
           <div className="w-[35%] flex-none overflow-hidden rounded-lg bg-white p-[4%]">
-            {avatar ? (
-              <AvatarPreview equipped={avatar.equipped} items={avatar.items} className="w-full" />
-            ) : (
-              <img src="/assets/char/Portrait.png" alt="" className="block w-full" draggable={false} />
-            )}
+            <img src="/assets/char/Portrait.png" alt="" className="block w-full" draggable={false} />
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <span className="truncate font-galmuri11 text-[13px] text-ink">

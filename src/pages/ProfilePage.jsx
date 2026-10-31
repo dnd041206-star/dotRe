@@ -4,8 +4,6 @@ import { useAuth } from '../lib/AuthContext'
 import { getProfileFull, updateProfile, setRepItems, deleteMyAccount } from '../lib/profileService'
 import { getMyItems } from '../lib/diaryService'
 import { RARITY_TABLE } from '../game/statSystem'
-import { getAvatar } from '../lib/api'
-import AvatarPreview from '../components/AvatarPreview'
 
 /** 'YYYY-MM-DD' → '11월 27일' */
 const fmtBirthday = (b) => {
@@ -39,12 +37,6 @@ export default function ProfilePage() {
   const [slotIndex, setSlotIndex] = useState(null)
   const [myItems, setMyItems] = useState([])
   const [busy, setBusy] = useState(false)
-
-  const [avatar, setAvatar] = useState(null)
-  useEffect(() => {
-    if (!myId) return
-    getAvatar().then(setAvatar).catch(() => {})
-  }, [myId])
 
   const load = () => {
     if (!myId) return
@@ -147,12 +139,9 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {avatar ? (
-          <AvatarPreview equipped={avatar.equipped} items={avatar.items} className="max-h-full w-[48%]" />
-        ) : (
-          <img src="/assets/char/Avatar.png" alt=""
-              className="pixel max-h-full w-[35%] select-none object-contain" draggable={false} />
-        )}
+        {/* 임시 아바타 — 단상 에셋 나오면 아래에 깔면 됨 */}
+        <img src="/assets/char/Avatar.png" alt=""
+             className="pixel max-h-full w-[35%] select-none object-contain" draggable={false} />
       </div>
 
       {/* ── 정보 카드 ── */}
