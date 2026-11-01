@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import { getProfileFull, updateProfile, setRepItems, deleteMyAccount } from '../lib/profileService'
-import { getMyItems } from '../lib/diaryService'
+import { getOwnedItems } from '../lib/diaryService'
 import { RARITY_TABLE } from '../game/statSystem'
+
 
 /** 'YYYY-MM-DD' → '11월 27일' */
 const fmtBirthday = (b) => {
@@ -45,12 +46,12 @@ export default function ProfilePage() {
   useEffect(load, [myId])
 
   const openSlot = async (i) => {
-    setSlotIndex(i)
-    if (myItems.length === 0) {
-      const items = await getMyItems(myId)
-      setMyItems(items.filter((it) => it.meta_status === 'done'))
-    }
+  setSlotIndex(i)
+  if (myItems.length === 0) {
+    const items = await getOwnedItems(myId)
+    setMyItems(items)
   }
+}
 
   const pickItem = async (item) => {
     const ids = [...(info.profile.rep_item_ids || [])]

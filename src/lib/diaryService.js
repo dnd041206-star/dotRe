@@ -94,3 +94,17 @@ export async function getMyItems(userId) {
 //   if (error) throw error
 //   return data
 // }
+
+
+/** 대표 아이템으로 고를 수 있는 아이템 — 내가 소유한 모든 완료된 아이템
+ *  (내가 만든 것 + 친구에게 교환받은 것 모두 포함) */
+export async function getOwnedItems(userId) {
+  const { data, error } = await supabase
+    .from('items')
+    .select('id, name, image_url, description, rarity, stats, power, meta_status, created_at')
+    .eq('owner_id', userId)
+    .eq('meta_status', 'done')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
