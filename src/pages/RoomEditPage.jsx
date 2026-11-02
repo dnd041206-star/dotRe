@@ -192,7 +192,7 @@ const handleSlotClick = (r) => {
         {/* ── 선택한 물건 조작 ── */}
         {sel && (
           <div className="mt-[3%] flex-none rounded-[8px] border-2 border-border bg-white/80 p-2">
-            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
 
               <button onClick={() => update(selected.kind, sel.id, { flipped: !sel.flipped })}
                       className="translate-x-[39px] btn-icon rounded-[6px] border border-border px-4 py-1 font-galmuri9 text-[12px] text-ink"
