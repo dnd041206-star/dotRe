@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
 import { getRoomItems, saveRoomLayout, getRoomFurniture, saveFurnitureLayout } from '../lib/roomService'
 
-/** 목록 격자 한 줄에 들어갈 칸 수 / 최소로 깔아둘 빈 칸 수 */
 const COLS = 5
 const MIN_SLOTS = 10
 
@@ -31,9 +30,15 @@ export default function RoomEditPage() {
   const rowsOf = (kind) => (kind === 'item' ? itemRows : furnRows)
   const setRowsOf = (kind) => (kind === 'item' ? setItemRows : setFurnRows)
 
+  // 배경으로 적용된 가구 — 떠다니는 스프라이트 목록에서는 빼고, 방 바탕 이미지로만 씀
+  const activeBg = furnRows.find((r) => r.placed && r.furniture_catalog?.category === 'background')
+  const roomBg = activeBg?.furniture_catalog?.image_url || DEFAULT_ROOM_BG
+
   const placedAll = [
     ...itemRows.filter((r) => r.placed).map((r) => ({ ...r, kind: 'item', image: r.items.image_url, name: r.items.name, size: SIZE })),
-    ...furnRows.filter((r) => r.placed).map((r) => ({ ...r, kind: 'furniture', image: r.furniture_catalog?.image_url, name: r.furniture_catalog?.name, size: FURN_SIZE })),
+    ...furnRows
+      .filter((r) => r.placed && r.furniture_catalog?.category !== 'background')
+      .map((r) => ({ ...r, kind: 'furniture', image: r.furniture_catalog?.image_url, name: r.furniture_catalog?.name, size: FURN_SIZE })),
   ]
 
   const storedItems = itemRows.filter((r) => !r.placed)
@@ -64,6 +69,16 @@ export default function RoomEditPage() {
     setSelected({ kind, id: row.id })
   }
 
+  /** 배경 선택 — 좌표 없이, 고른 것만 placed:true로 두고 나머지 배경은 전부 false */
+  const selectBackground = (row) => {
+    setFurnRows((rows) => rows.map((r) => {
+      if (r.furniture_catalog?.category !== 'background') return r
+      return { ...r, placed: r.id === row.id }
+    }))
+    setDirty(true)
+    setSelected(null)
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -78,15 +93,21 @@ export default function RoomEditPage() {
   }
 
   const sel = selected && rowsOf(selected.kind).find((r) => r.id === selected.id)
-  const selName = sel ? (selected.kind === 'item' ? sel.items.name : sel.furniture_catalog?.name) : null
 
-  // 목록 격자 — 보유분 + 빈 칸 패딩
   const stored = tab === 'item' ? storedItems : storedFurn
   const slotCount = Math.max(MIN_SLOTS, Math.ceil(stored.length / COLS) * COLS)
   const slots = Array.from({ length: slotCount }, (_, i) => stored[i] ?? null)
 
   const imgOf = (r) => (tab === 'item' ? r.items?.image_url : r.furniture_catalog?.image_url)
   const nameOf = (r) => (tab === 'item' ? r.items?.name : r.furniture_catalog?.name)
+
+  const handleSlotClick = (r) => {
+    if (tab === 'furniture' && r.furniture_catalog?.category === 'background') {
+      selectBackground(r)
+    } else {
+      placeRow(tab === 'item' ? 'item' : 'furniture', r)
+    }
+  }
 
   return (
      <div className="no-scrollbar relative flex h-full flex-col overflow-y-auto px-[3%] py-[0%]">
@@ -116,7 +137,7 @@ export default function RoomEditPage() {
              onPointerLeave={() => setDragId(null)}
              onPointerDown={(e) => { if (e.target === roomRef.current) setSelected(null) }}
              className="relative mt-[3%] aspect-square w-full flex-none touch-none overflow-hidden rounded-[14px]">
-          <img src={DEFAULT_ROOM_BG} alt=""
+          <img src={roomBg} alt=""
                className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                style={{ zIndex: 0 }} draggable={false} />
 
@@ -192,7 +213,6 @@ export default function RoomEditPage() {
           <img src="/assets/ui/RoomItemlist.png" alt=""
                className="block w-full select-none" draggable={false} />
 
-          {/* 아이템 / 인테리어 탭 — 패널 위쪽에 걸침 */}
           <div className="absolute inset-x-0 -top-[9%] mx-auto w-[62%]">
             <img src={tab === 'item' ? '/assets/ui/Room_ItemPick.png' : '/assets/ui/Room_InteriorPick.png'}
                  alt={tab === 'item' ? '아이템' : '인테리어'}
@@ -203,13 +223,12 @@ export default function RoomEditPage() {
                     className="btn-icon absolute inset-y-0 right-0 w-1/2" />
           </div>
 
-          {/* 격자 — 이름 없이 이미지만 */}
           <div className="no-scrollbar absolute inset-x-[3%] bottom-[4%] top-[11%] overflow-y-auto">
             <div className="grid grid-cols-5 gap-[2%]">
               {slots.map((r, i) =>
                 r ? (
                   <button key={r.id}
-                          onClick={() => placeRow(tab === 'item' ? 'item' : 'furniture', r)}
+                          onClick={() => handleSlotClick(r)}
                           aria-label={nameOf(r)}
                           className="btn-icon flex aspect-square items-center justify-center rounded-[8px] border border-border bg-white p-1">
                     {imgOf(r) ? (

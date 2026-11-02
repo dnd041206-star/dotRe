@@ -5,7 +5,7 @@ import { getPlacedItems, getPlacedFurniture } from '../lib/roomService'
 
 const AVATAR_SIZE = 0.32
 
-export default function MyRoom({ className = '', background }) {
+export default function MyRoom({ className = '' }) {
   const { session } = useAuth()
   const [items, setItems] = useState([])
   const [furniture, setFurniture] = useState([])
@@ -17,16 +17,20 @@ export default function MyRoom({ className = '', background }) {
     getPlacedFurniture(id).then(setFurniture).catch(console.error)
   }, [session])
 
+  const bgRow = furniture.find((r) => r.furniture_catalog?.category === 'background')
+  const roomBg = bgRow?.furniture_catalog?.image_url || DEFAULT_ROOM_BG
+
   const all = [
     ...items.map((r) => ({ ...r, key: `i-${r.id}`, image: r.items.image_url, name: r.items.name, size: SIZE })),
-    ...furniture.map((r) => ({ ...r, key: `f-${r.id}`, image: r.furniture_catalog?.image_url, name: r.furniture_catalog?.name, size: FURN_SIZE })),
+    ...furniture
+      .filter((r) => r.furniture_catalog?.category !== 'background')
+      .map((r) => ({ ...r, key: `f-${r.id}`, image: r.furniture_catalog?.image_url, name: r.furniture_catalog?.name, size: FURN_SIZE })),
   ]
- 
+
   return (
     <div className={`relative aspect-square overflow-hidden ${className}`}>
-      {/* ▼ 방 배경 — 구매 배경(background) 있으면 그걸, 없으면 기본 배경 */}
       <img
-        src={background || DEFAULT_ROOM_BG}
+        src={roomBg}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
         style={{ zIndex: 0 }}
