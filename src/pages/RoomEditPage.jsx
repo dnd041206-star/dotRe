@@ -70,19 +70,18 @@ export default function RoomEditPage() {
   }
 
   const DEFAULT_BG_ITEM = {
-  id: '__default_bg__',
-  __defaultBg: true,
-  furniture_catalog: { name: '기본 배경', image_url: DEFAULT_ROOM_BG, category: 'background' },
-}
+    id: '__default_bg__',
+    __defaultBg: true,
+    furniture_catalog: { name: '기본 배경', image_url: DEFAULT_ROOM_BG, category: 'background' },
+  }
 
-const resetBackground = () => {
-  setFurnRows((rows) => rows.map((r) =>
-    r.furniture_catalog?.category === 'background' ? { ...r, placed: false } : r
-  ))
-  setDirty(true)
-  setSelected(null)
-}
-
+  const resetBackground = () => {
+    setFurnRows((rows) => rows.map((r) =>
+      r.furniture_catalog?.category === 'background' ? { ...r, placed: false } : r
+    ))
+    setDirty(true)
+    setSelected(null)
+  }
 
   /** 배경 선택 — 좌표 없이, 고른 것만 placed:true로 두고 나머지 배경은 전부 false */
   const selectBackground = (row) => {
@@ -116,20 +115,20 @@ const resetBackground = () => {
   const imgOf = (r) => (tab === 'item' ? r.items?.image_url : r.furniture_catalog?.image_url)
   const nameOf = (r) => (tab === 'item' ? r.items?.name : r.furniture_catalog?.name)
 
-const handleSlotClick = (r) => {
-  if (r.__defaultBg) {
-    resetBackground()
-    return
+  const handleSlotClick = (r) => {
+    if (r.__defaultBg) {
+      resetBackground()
+      return
+    }
+    if (tab === 'furniture' && r.furniture_catalog?.category === 'background') {
+      selectBackground(r)
+    } else {
+      placeRow(tab === 'item' ? 'item' : 'furniture', r)
+    }
   }
-  if (tab === 'furniture' && r.furniture_catalog?.category === 'background') {
-    selectBackground(r)
-  } else {
-    placeRow(tab === 'item' ? 'item' : 'furniture', r)
-  }
-}
 
   return (
-     <div className="no-scrollbar relative flex h-full flex-col overflow-y-auto px-[3%] py-[0%]">
+    <div className="no-scrollbar relative flex h-full flex-col overflow-y-auto px-[3%] py-[0%]">
 
       <div className="no-scrollbar relative flex h-full flex-col overflow-y-auto px-[4%] py-[3%]">
 
@@ -140,8 +139,8 @@ const handleSlotClick = (r) => {
           </button>
 
           <h2 className="mx-auto text-center flex-none translate-x-[12px] translate-y-[-5px] border-b-2 border-accent-2 pb-0.5 font-galmuri9 text-[26px] text-white text-outline"
-          style={{ '--outline': '#ED2F89' }}>
-          방 편집
+              style={{ '--outline': '#ED2F89' }}>
+            방 편집
           </h2>
           <button onClick={handleSave} disabled={!dirty || saving}
                   aria-label="저장" className="btn-icon w-[23%] disabled:opacity-40">
@@ -192,23 +191,33 @@ const handleSlotClick = (r) => {
         {/* ── 선택한 물건 조작 ── */}
         {sel && (
           <div className="mt-[3%] flex-none rounded-[8px] border-2 border-border bg-white/80 p-2">
-              <div className="flex items-center gap-2">
-
+            <div className="flex items-center gap-1.5">
               <button onClick={() => update(selected.kind, sel.id, { flipped: !sel.flipped })}
-                      className="translate-x-[39px] btn-icon rounded-[6px] border border-border px-4 py-1 font-galmuri9 text-[12px] text-ink"
+                      className="btn-icon flex-1 rounded-[6px] border border-border py-1 font-galmuri9 text-[11px] text-ink"
                       style={{ backgroundColor: '#E1FF96' }}>
                 좌우반전
               </button>
+
               <button onClick={() => {
                         const maxZ = Math.max(0, ...itemRows.map((r) => r.z ?? 0), ...furnRows.map((r) => r.z ?? 0))
                         update(selected.kind, sel.id, { z: maxZ + 1 })
                       }}
-                      className="translate-x-[44px] btn-icon rounded-[6px] border border-border px-4 py-1 font-galmuri9 text-[12px] text-ink"
+                      className="btn-icon flex-1 rounded-[6px] border border-border py-1 font-galmuri9 text-[11px] text-ink"
                       style={{ backgroundColor: '#E1FF96' }}>
                 앞으로
               </button>
+
+              <button onClick={() => {
+                        const minZ = Math.min(0, ...placedAll.map((r) => r.z ?? 0))
+                        update(selected.kind, sel.id, { z: Math.max(0, minZ - 1) })
+                      }}
+                      className="btn-icon flex-1 rounded-[6px] border border-border py-1 font-galmuri9 text-[11px] text-ink"
+                      style={{ backgroundColor: '#E1FF96' }}>
+                뒤로
+              </button>
+
               <button onClick={() => { update(selected.kind, sel.id, { placed: false }); setSelected(null) }}
-                      className="translate-x-[49px] btn-icon rounded-[6px] border border-border px-4 py-1 font-galmuri9 text-[12px] text-accent-2"
+                      className="btn-icon flex-1 rounded-[6px] border border-border py-1 font-galmuri9 text-[11px] text-accent-2"
                       style={{ backgroundColor: '#E1FF96' }}>
                 치우기
               </button>
