@@ -4,6 +4,10 @@ import { getWeekly, claimWeekly } from '../lib/api'
 import { GRADE_TABLE } from '../game/weekly'
 import NutsBar from '../components/NutsBar'
 
+
+/** MiniWindowBar.png의 세로 비율 (1610×143) */
+const WINDOWBAR_RATIO = 143 / 1610
+
 const gradeColor = (g) => GRADE_TABLE.find((x) => x.grade === g)?.color ?? '#9ca3af'
 
 function Pedestal({ item }) {
@@ -171,37 +175,46 @@ export default function WeeklyPage() {
 
       {/* ── 결산 창 ── */}
       {result && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
              onClick={() => setResult(null)}>
-          <div className="w-full max-w-[320px] overflow-hidden rounded-[10px] border-2 border-line bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
+          <div className="relative flex max-h-[80dvh] w-full max-w-[340px] flex-col overflow-hidden rounded-[10px] border-2 border-border bg-surface shadow-[4px_4px_0_rgba(0,0,0,0.35)]"
                onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 border-b-2 border-line bg-accent px-3 py-1">
-              <span className="flex-1 font-galmuri9 text-[11px] font-bold text-accent-ink">
-                이번 주 평가 결과
-              </span>
-              <button onClick={() => setResult(null)} aria-label="닫기"
-                      className="btn-icon flex h-5 w-5 items-center justify-center rounded-sm border border-accent-ink bg-surface font-galmuri9 text-[9px] leading-none text-accent-ink">
-                ✕
-              </button>
-            </div>
 
-            <div className="p-4 text-center">
+            {/* 타이틀바 높이만큼 자리 확보 */}
+            <div className="flex-none"
+                 style={{ paddingTop: `${(WINDOWBAR_RATIO * 100).toFixed(2)}%` }}
+                 aria-hidden="true" />
+
+            {/* 본문 */}
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[4%] text-center">
               <p className="my-2 font-galmuri9 text-[56px] font-bold leading-none"
                  style={{ color: gradeColor(result.grade) }}>
                 {result.grade}
               </p>
-
-              <div className="mt-3 rounded-[6px] border-2 border-border bg-surface-2 py-3 font-galmuri9 text-[12px] font-bold text-ink">
-                🥜 너트 {result.reward} 획득!
+              <div className="mt-[4%] flex items-center justify-center gap-1.5 font-galmuri9 text-[18px] font-bold text-ink">
+                <img src="/assets/icons/Nuts.png" alt="" className="pixel h-4 w-4" draggable={false} />
+                너트 {result.reward} 획득!
               </div>
               <p className="mt-2 font-galmuri11 text-[9px] text-ink-dim">
                 보유 너트 {result.nuts}
               </p>
 
-              <button onClick={() => setResult(null)}
-                      className="mt-4 w-full rounded-full border-2 border-line bg-accent py-2 font-galmuri9 text-[11px] font-bold text-accent-ink">
-                확인
+              <button onClick={() => setResult(null)} aria-label="확인"
+                      className="btn-icon mx-auto mt-[6%] block w-[40%]">
+                <img src="/assets/ui/OK.png" alt="확인"
+                     className="block w-full select-none" draggable={false} />
               </button>
+            </div>
+
+            {/* 타이틀바 — 본문 위에 겹쳐 그림 */}
+            <div className="pointer-events-none absolute inset-x-0 top-0">
+              <img src="/assets/ui/MiniWindowBar.png" alt=""
+                   className="block w-full select-none" draggable={false} />
+              <span className="absolute inset-y-0 left-[10%] right-[9%] flex items-center truncate font-galmuri9 text-[13px] font-normal text-ink">
+                이번 주 평가 결과
+              </span>
+              <button onClick={() => setResult(null)} aria-label="닫기"
+                      className="btn-icon pointer-events-auto absolute inset-y-0 right-[1.4%] w-[6%]" />
             </div>
           </div>
         </div>
