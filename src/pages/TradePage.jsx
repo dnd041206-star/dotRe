@@ -243,7 +243,7 @@ export default function TradePage() {
                className="block w-full select-none" draggable={false} />
           <div className="absolute inset-x-0 bottom-[14%] left-[16%] top-0 flex items-center justify-center pr-[6%]">
             <p className="text-center font-galmuri11 text-[13px] leading-relaxed text-ink">
-              오늘은 누구와 교환할건가?
+              친구에게 아이템을 보내보게나 
             </p>
           </div>
         </div>
