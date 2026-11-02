@@ -51,11 +51,10 @@ export async function getRoomFurniture(myId) {
   return data
 }
 
-/** 방에 배치된 가구만 (홈 화면용) */
 export async function getPlacedFurniture(myId) {
   const { data, error } = await supabase
     .from('room_furniture')
-    .select('id, x, y, z, scale, flipped, furniture_catalog(name, image_url)')
+    .select('id, x, y, z, scale, flipped, furniture_catalog(name, image_url, category)')
     .eq('user_id', myId)
     .eq('placed', true)
     .order('z', { ascending: true })
@@ -80,13 +79,3 @@ export async function saveFurnitureLayout(rows) {
   )
 }
 
-export async function getPlacedFurniture(myId) {
-  const { data, error } = await supabase
-    .from('room_furniture')
-    .select('id, x, y, z, scale, flipped, furniture_catalog(name, image_url, category)')
-    .eq('user_id', myId)
-    .eq('placed', true)
-    .order('z', { ascending: true })
-  if (error) throw error
-  return data
-}
