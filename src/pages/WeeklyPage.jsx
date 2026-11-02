@@ -96,9 +96,9 @@ export default function WeeklyPage() {
       {/* ── 마스코트 + 말풍선 ── */}
       <div className="flex flex-none items-start">
         <img src="/assets/char/hakase_test.png" alt=""
-             className="pixel w-[26%] flex-none select-none" draggable={false} />
+             className="pixel w-[34%] flex-none select-none" draggable={false} />
 
-        <div className="relative mt-[6%] w-[58%] flex-none">
+        <div className="relative mt-[8%] w-[58%] flex-none">
           <img src="/assets/ui/TestBubble.png" alt=""
                className="block w-full select-none" draggable={false} />
           <div className="absolute inset-y-0 left-[16%] right-[6%] flex flex-col items-center justify-center text-center">

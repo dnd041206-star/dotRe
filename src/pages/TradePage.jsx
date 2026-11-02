@@ -236,14 +236,14 @@ export default function TradePage() {
       {/* ── 박사 + 말풍선 ── */}
       <div className="flex flex-none items-start">
         <img src="/assets/char/hakase_test.png" alt=""
-             className="pixel w-[28%] flex-none select-none" draggable={false} />
+             className="pixel w-[34%] flex-none select-none" draggable={false} />
 
-        <div className="relative mt-[6%] w-[60%]">
+        <div className="relative mt-[8%] w-[60%]">
           <img src="/assets/ui/TestBubble.png" alt=""
                className="block w-full select-none" draggable={false} />
           <div className="absolute inset-x-0 bottom-[14%] left-[16%] top-0 flex items-center justify-center pr-[6%]">
             <p className="text-center font-galmuri11 text-[13px] leading-relaxed text-ink">
-              친구에게 아이템을 보내보게나 
+              친구에게 아이템을 <br/>보내보게나 
             </p>
           </div>
         </div>
