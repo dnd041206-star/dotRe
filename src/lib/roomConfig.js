@@ -6,4 +6,4 @@ export const DEFAULT_ROOM_BG = '/assets/room/RoomBase.png'
 // 아바타 — 홈 방 안의 고정 위치/크기 (0~1, 방 너비·높이 대비)
 export const AVATAR_SIZE = 0.32
 export const AVATAR_POS  = { x: 0.5, y: 0.78 }
-export const AVATAR_Z    = 5
+export const AVATAR_Z    = 999
