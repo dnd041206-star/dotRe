@@ -1,20 +1,23 @@
-import { ITEM_SIZE as SIZE, FURN_SIZE, DEFAULT_ROOM_BG } from '../lib/roomConfig'
+import { ITEM_SIZE as SIZE, FURN_SIZE, DEFAULT_ROOM_BG,
+         AVATAR_SIZE, AVATAR_POS, AVATAR_Z } from '../lib/roomConfig'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../lib/AuthContext'
 import { getPlacedItems, getPlacedFurniture } from '../lib/roomService'
-
-const AVATAR_SIZE = 0.32
+import { getAvatar } from '../lib/api'
+import AvatarPreview from './AvatarPreview'
 
 export default function MyRoom({ className = '' }) {
   const { session } = useAuth()
   const [items, setItems] = useState([])
   const [furniture, setFurniture] = useState([])
+  const [avatar, setAvatar] = useState(null)
 
   useEffect(() => {
     const id = session?.user?.id
     if (!id) return
     getPlacedItems(id).then(setItems).catch(console.error)
     getPlacedFurniture(id).then(setFurniture).catch(console.error)
+    getAvatar().then(setAvatar).catch(console.error)
   }, [session])
 
   const bgRow = furniture.find((r) => r.furniture_catalog?.category === 'background')
@@ -48,6 +51,23 @@ export default function MyRoom({ className = '' }) {
                transform: `translate(-50%, -50%) scaleX(${r.flipped ? -1 : 1})`,
              }} />
       ))}
+      
+      {/* 아바타 — 방 안 고정 위치 */}
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          left: `${AVATAR_POS.x * 100}%`,
+          top: `${AVATAR_POS.y * 100}%`,
+          width: `${AVATAR_SIZE * 100}%`,
+          zIndex: AVATAR_Z,
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
+        <AvatarPreview equipped={avatar?.equipped} items={avatar?.items} className="w-full" />
+      </div>
+
+
+
     </div>
   )
 }

@@ -12,6 +12,9 @@ import {
 
 import { getProfileFull } from '../lib/profileService'
 import ProfileCard from '../components/ProfileCard'
+import { supabase } from '../lib/supabaseClient'
+import AvatarPreview from '../components/AvatarPreview'
+
 
 /** MiniWindowBar.png의 세로 비율 (1610×143) */
 const WINDOWBAR_RATIO = 143 / 1610
@@ -47,7 +50,7 @@ export default function FriendsPage() {
   const [friends, setFriends] = useState([])
   const [busy, setBusy] = useState(false)
   const [viewing, setViewing] = useState(null)
-
+  const [avatarParts, setAvatarParts] = useState([])
   const [showFinder, setShowFinder] = useState(false)
   const [finderTab, setFinderTab] = useState('search')   // search | requests
 
@@ -62,6 +65,11 @@ export default function FriendsPage() {
   }
 
   useEffect(() => { refresh() }, [myId])
+
+    useEffect(() => {
+    supabase.from('avatar_parts').select('id, image_url')
+      .then(({ data }) => setAvatarParts(data ?? []))
+  }, [])
 
   const handleSearch = async () => {
     const q = keyword.trim()
@@ -117,6 +125,12 @@ export default function FriendsPage() {
 
   const label = (p) => p?.nickname ?? p?.full_name ?? p?.email ?? '알 수 없음'
 
+    const equippedOf = (p) => ({
+    face:   p?.equipped_face_id   ?? null,
+    hair:   p?.equipped_hair_id   ?? null,
+    outfit: p?.equipped_outfit_id ?? null,
+  })
+
   const closeFinder = () => {
     setShowFinder(false)
     setKeyword('')
@@ -171,9 +185,11 @@ export default function FriendsPage() {
                   }}
                   className="flex w-full items-center gap-2 rounded-[6px] bg-surface-2 p-1.5 text-left"
                 >
-                  <img src="/assets/char/Portrait.png" alt=""
-                       className="h-10 w-10 flex-none rounded-full border-1 border-border bg-white object-cover"
-                       draggable={false} />
+                  <div className="relative h-10 w-10 flex-none overflow-hidden rounded-full border-1 border-border bg-white">
+                    <div className="absolute left-1/2 top-0 w-[140%] -translate-x-1/2 translate-y-[2%]">
+                      <AvatarPreview equipped={equippedOf(f)} items={avatarParts} className="w-full" />
+                    </div>
+                  </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-galmuri9 text-[11px] font-bold text-ink">{label(f)}</p>
                     <p className="mt-0.5 truncate rounded-[4px] bg-white px-2 py-0.5 font-galmuri11 text-[9px] text-ink-dim">
@@ -238,9 +254,11 @@ export default function FriendsPage() {
             <div className="flex flex-col gap-2">
               {requests.map((req) => (
                 <div key={req.id} className="flex items-center gap-2 rounded-[6px] bg-surface-2 p-1.5">
-                  <img src="/assets/char/Portrait.png" alt=""
-                       className="h-10 w-10 flex-none rounded-full border-1 border-border bg-white object-cover"
-                       draggable={false} />
+                  <div className="relative h-10 w-10 flex-none overflow-hidden rounded-full border-1 border-border bg-white">
+                    <div className="absolute left-1/2 top-0 w-[140%] -translate-x-1/2 translate-y-[2%]">
+                      <AvatarPreview equipped={equippedOf(req.requester)} items={avatarParts} className="w-full" />
+                    </div>
+                  </div>
                   <span className="min-w-0 flex-1 truncate font-galmuri9 text-[11px] font-bold text-ink">
                     {label(req.requester)}
                   </span>
@@ -293,8 +311,14 @@ export default function FriendsPage() {
 
             {/* 본문 */}
             <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto p-[5%]">
+              {/* 아바타 */}
+              <div className="flex justify-center">
+                <AvatarPreview equipped={equippedOf(viewing.profile)} items={avatarParts}
+                               className="w-[38%]" />
+              </div>
+
               {/* 한 줄 소개 */}
-              <p className="text-center font-galmuri11 text-[13px] text-ink-dim">
+              <p className="mt-[4%] text-center font-galmuri11 text-[13px] text-ink-dim">
                 “{viewing.profile.bio || '한 줄 소개가 없어요'}”
               </p>
 

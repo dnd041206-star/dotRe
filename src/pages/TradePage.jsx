@@ -9,6 +9,8 @@ import {
 import { RARITY_TABLE, STAT_KEYS, STAT_LABELS, statPercent } from '../game/statSystem'
 import { useNavigate } from 'react-router-dom'
 import { gradeIcon } from '../game/gradeIcons'
+import { supabase } from '../lib/supabaseClient'
+import AvatarPreview from '../components/AvatarPreview'
 
 const FAIL_MESSAGES = {
   not_pending: '이미 처리된 아이템이에요.',
@@ -40,6 +42,7 @@ export default function TradePage() {
 
   const [detail, setDetail] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [avatarParts, setAvatarParts] = useState([])
 
   const refresh = async () => {
     if (!myId) return
@@ -54,6 +57,11 @@ export default function TradePage() {
   }
 
   useEffect(() => { refresh() }, [myId])
+
+    useEffect(() => {
+    supabase.from('avatar_parts').select('id, image_url')
+      .then(({ data }) => setAvatarParts(data ?? []))
+  }, [])
 
   const openBox = async () => {
     setShowBox(true)
@@ -141,6 +149,12 @@ export default function TradePage() {
 
   const label = (p) => p?.nickname ?? p?.full_name ?? p?.email ?? '알 수 없음'
 
+    const equippedOf = (p) => ({
+    face:   p?.equipped_face_id   ?? null,
+    hair:   p?.equipped_hair_id   ?? null,
+    outfit: p?.equipped_outfit_id ?? null,
+  })
+
   return (
     <div className="flex h-full max-h-full min-h-0 flex-col overflow-hidden px-[5%] py-[4%]">
 
@@ -186,8 +200,11 @@ export default function TradePage() {
                   className="btn-icon flex w-[34%] flex-col items-center">
             <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full border-2 border-border bg-surface-2 p-[12%]">
               {selectedFriend && (
-                <img src="/assets/char/Portrait.png" alt=""
-                     className="h-full w-full rounded-full object-cover" draggable={false} />
+                <div className="relative h-full w-full overflow-hidden rounded-full">
+                  <div className="absolute left-1/2 top-0 w-[140%] -translate-x-1/2 translate-y-[2%]">
+                    <AvatarPreview equipped={equippedOf(selectedFriend)} items={avatarParts} className="w-full" />
+                  </div>
+                </div>
               )}
             </div>
 
@@ -307,9 +324,11 @@ export default function TradePage() {
                                   ? 'border-accent-2 bg-surface-2'
                                   : 'border-border bg-surface-2'
                               }`}>
-                        <img src="/assets/char/Portrait.png" alt=""
-                             className="h-12 w-12 flex-none rounded-full border-2 border-border bg-white object-cover"
-                             draggable={false} />
+                        <div className="relative h-12 w-12 flex-none overflow-hidden rounded-full border-2 border-border bg-white">
+                          <div className="absolute left-1/2 top-0 w-[140%] -translate-x-1/2 translate-y-[2%]">
+                            <AvatarPreview equipped={equippedOf(f)} items={avatarParts} className="w-full" />
+                          </div>
+                        </div>
                         <span className="min-w-0 flex-1 truncate font-galmuri9 text-[12px] font-bold text-ink">
                           {label(f)}
                         </span>

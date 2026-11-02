@@ -54,7 +54,7 @@ export async function updateNickname(myId, nickname) {
 export async function getProfileFull(userId) {
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('id, nickname, full_name, email, bio, birthday, rep_item_ids, nuts, created_at')
+    .select('id, nickname, full_name, email, bio, birthday, rep_item_ids, nuts, created_at, equipped_face_id, equipped_hair_id, equipped_outfit_id')
     .eq('id', userId)
     .single()
   if (error) throw error

@@ -4,6 +4,8 @@ import { useAuth } from '../lib/AuthContext'
 import { getProfileFull, updateProfile, setRepItems, deleteMyAccount } from '../lib/profileService'
 import { getOwnedItems } from '../lib/diaryService'
 import { RARITY_TABLE } from '../game/statSystem'
+import AvatarPreview from '../components/AvatarPreview'
+import { getAvatar } from '../lib/api'
 
 
 /** 'YYYY-MM-DD' → '11월 27일' */
@@ -32,6 +34,7 @@ export default function ProfilePage() {
   const navigate = useNavigate()
 
   const [info, setInfo] = useState(null)
+  const [avatar, setAvatar] = useState(null)
   const [showSettings, setShowSettings] = useState(false)   // 내 정보 변경 모달
   const [editField, setEditField] = useState(null)          // 'nickname' | 'birthday' | 'bio'
   const [draft, setDraft] = useState('')
@@ -42,6 +45,7 @@ export default function ProfilePage() {
   const load = () => {
     if (!myId) return
     getProfileFull(myId).then(setInfo)
+    getAvatar().then(setAvatar).catch(console.error)
   }
   useEffect(load, [myId])
 
@@ -140,9 +144,9 @@ export default function ProfilePage() {
           </button>
         </div>
 
-        {/* 임시 아바타 — 단상 에셋 나오면 아래에 깔면 됨 */}
-        <img src="/assets/char/Avatar.png" alt=""
-             className="pixel max-h-full w-[35%] select-none object-contain" draggable={false} />
+        {/* 아바타 — 장착 파츠 합성 */}
+        <AvatarPreview equipped={avatar?.equipped} items={avatar?.items}
+                       className="max-h-full w-[35%]" />
       </div>
 
       {/* ── 정보 카드 ── */}

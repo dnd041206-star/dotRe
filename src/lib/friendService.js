@@ -46,7 +46,7 @@ export async function sendFriendRequest(myId, friendId) {
 export async function getReceivedRequests(myId) {
   const { data, error } = await supabase
     .from('friends')
-    .select('id, status, requester:profiles!friends_user_id_fkey(id, email, full_name, nickname)')
+    .select('id, status, requester:profiles!friends_user_id_fkey(id, email, full_name, nickname, equipped_face_id, equipped_hair_id, equipped_outfit_id)')
     .eq('friend_id', myId)
     .eq('status', 'pending')
   if (error) throw error
@@ -71,8 +71,8 @@ export async function getMyFriends(myId) {
     .from('friends')
     .select(`
       id, status,
-      user:profiles!friends_user_id_fkey(id, email, full_name, nickname, bio),
-      friend:profiles!friends_friend_id_fkey(id, email, full_name, nickname, bio)
+      user:profiles!friends_user_id_fkey(id, email, full_name, nickname, bio, equipped_face_id, equipped_hair_id, equipped_outfit_id),
+      friend:profiles!friends_friend_id_fkey(id, email, full_name, nickname, bio, equipped_face_id, equipped_hair_id, equipped_outfit_id)
     `)
     .eq('status', 'accepted')
     .or(`user_id.eq.${myId},friend_id.eq.${myId}`)
