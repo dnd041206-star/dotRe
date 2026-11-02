@@ -69,6 +69,21 @@ export default function RoomEditPage() {
     setSelected({ kind, id: row.id })
   }
 
+  const DEFAULT_BG_ITEM = {
+  id: '__default_bg__',
+  __defaultBg: true,
+  furniture_catalog: { name: '기본 배경', image_url: DEFAULT_ROOM_BG, category: 'background' },
+}
+
+const resetBackground = () => {
+  setFurnRows((rows) => rows.map((r) =>
+    r.furniture_catalog?.category === 'background' ? { ...r, placed: false } : r
+  ))
+  setDirty(true)
+  setSelected(null)
+}
+
+
   /** 배경 선택 — 좌표 없이, 고른 것만 placed:true로 두고 나머지 배경은 전부 false */
   const selectBackground = (row) => {
     setFurnRows((rows) => rows.map((r) => {
@@ -94,20 +109,24 @@ export default function RoomEditPage() {
 
   const sel = selected && rowsOf(selected.kind).find((r) => r.id === selected.id)
 
-  const stored = tab === 'item' ? storedItems : storedFurn
+  const stored = tab === 'item' ? storedItems : [DEFAULT_BG_ITEM, ...storedFurn]
   const slotCount = Math.max(MIN_SLOTS, Math.ceil(stored.length / COLS) * COLS)
   const slots = Array.from({ length: slotCount }, (_, i) => stored[i] ?? null)
 
   const imgOf = (r) => (tab === 'item' ? r.items?.image_url : r.furniture_catalog?.image_url)
   const nameOf = (r) => (tab === 'item' ? r.items?.name : r.furniture_catalog?.name)
 
-  const handleSlotClick = (r) => {
-    if (tab === 'furniture' && r.furniture_catalog?.category === 'background') {
-      selectBackground(r)
-    } else {
-      placeRow(tab === 'item' ? 'item' : 'furniture', r)
-    }
+const handleSlotClick = (r) => {
+  if (r.__defaultBg) {
+    resetBackground()
+    return
   }
+  if (tab === 'furniture' && r.furniture_catalog?.category === 'background') {
+    selectBackground(r)
+  } else {
+    placeRow(tab === 'item' ? 'item' : 'furniture', r)
+  }
+}
 
   return (
      <div className="no-scrollbar relative flex h-full flex-col overflow-y-auto px-[3%] py-[0%]">
@@ -230,7 +249,9 @@ export default function RoomEditPage() {
                   <button key={r.id}
                           onClick={() => handleSlotClick(r)}
                           aria-label={nameOf(r)}
-                          className="btn-icon flex aspect-square items-center justify-center rounded-[8px] border border-border bg-white p-1">
+                          className={`btn-icon flex aspect-square items-center justify-center rounded-[8px] border bg-white p-1 ${
+                            r.__defaultBg && !activeBg ? 'border-accent-2' : 'border-border'
+                          }`}>
                     {imgOf(r) ? (
                       <img src={imgOf(r)} alt="" className="pixel max-h-full max-w-full object-contain" draggable={false} />
                     ) : (
